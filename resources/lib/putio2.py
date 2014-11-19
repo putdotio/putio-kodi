@@ -25,6 +25,7 @@ import logging
 from urllib import urlencode
 
 import xbmc
+import xbmcvfs
 import requests
 import iso8601
 
@@ -188,22 +189,25 @@ class _File(_BaseResource):
     def delete(self):
         return self.client.request('/files/%s/delete' % self.id)
 
-    @property
     def subtitle(self):
-        response = self.client.request('/files/%s/subtitles' % self.id)
+        try:
+            response = self.client.request('/files/%s/subtitles' % self.id)
+            status = response.get('status')
+            if status == 'OK':
+                default_sub = response['subtitles'][0]
+                raw_sub = self.client.request('/files/%s/subtitles/%s' % (
+                    self.id, default_sub['key']), raw=True)
+                dest = xbmc.translatePath('special://temp/%s' % (
+                    default_sub['name']))
 
-        items = response['subtitles']
-        subtitles = []
-        for item in items:
-            r = self.client.request('/files/%s/subtitles/%s' % 
-                                    (self.id, item['key']), raw=True)
-            dest = xbmc.translatePath('special://temp/%s' % item['name'])
-            subtitles.append(dest)
-            with open(dest, 'wb') as file_:
-                for data in r.iter_content():
-                    file_.write(data)
-        
-        return subtitles
+                if not xbmcvfs.exists(dest):
+                    with open(dest, 'wb') as _file:
+                        for data in raw_sub.iter_content():
+                            _file.write(data)
+                return dest
+            return None
+        except Exception:
+            return None
 
 
 class _Transfer(_BaseResource):
