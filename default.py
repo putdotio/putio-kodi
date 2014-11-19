@@ -33,6 +33,7 @@ pluginId = int(sys.argv[1])
 itemId = sys.argv[2].lstrip("?")
 addon = xa.Addon(PLUGIN_ID)
 
+
 try:
     thegui = xg
 except:
@@ -72,9 +73,9 @@ def populateDir(pluginUrl, pluginId, listing):
         )
 
         listItem.setInfo(item.content_type, {
-               'originaltitle': item.name,
-               'title': item.name,
-               'sorttitle':item.name
+            'originaltitle': item.name,
+            'title': item.name,
+            'sorttitle':item.name
         })
 
         thexp.addDirectoryItem(
@@ -106,20 +107,11 @@ def play(item):
     player.play(item.stream_url, listItem)
     subtitle = item.subtitle()
     if subtitle:
-        player.setSubtitles(subtitle)
-
-    #subtitles = item.subtitle
-    #count = 0
-    #while not xbmc.Player().isPlaying():
-    #    xbmc.sleep(1000)
-    #    count += 1
-    #    if count > 20:
-    #        break
-    #if xbmc.Player().isPlaying():
-    #    for subtitle in subtitles:
-    #        if os.path.isfile(subtitle):
-    #            xbmc.Player().setSubtitles(subtitle)
-    #            xbmc.Player().showSubtitles(True)
+        while not xbmc.Player().isPlaying():
+            xbmc.sleep(1000)
+        else:
+            player.setSubtitles(subtitle)
+            player.showSubtitles(True)
 
 
 class PutioApiHandler(object):
