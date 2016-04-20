@@ -67,9 +67,8 @@ def populate_dir(files):
         # I think they don't have any effect at all.
         li.setInfo(type=item.content_type,
                    infoLabels={
+                       'size': item.size,
                        'title': item.name,
-                       'sorttitle': item.name,
-                       'originaltitle': item.name,
                    })
 
         url = '%s?%s' % (PLUGIN_URL, item.id)
@@ -77,7 +76,7 @@ def populate_dir(files):
                                     url=url,
                                     listitem=li,
                                     isFolder='application/x-directory' == item.content_type)
-        xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
 
     xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE)
 
@@ -94,10 +93,10 @@ def play(item):
                           thumbnailImage=screenshot)
     li.setInfo(type='video',
                infoLabels={
+                   'size': item.size,
                    'title': item.name,
-                   'sorttitle': item.name,
-                   'originaltitle': item.name,
                })
+    li.setProperty('IsPlayable', 'true')
 
     player = xbmc.Player()
     player.play(item=item.stream_url(), listitem=li)
