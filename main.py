@@ -29,9 +29,9 @@ import xbmcplugin
 import resources.lib.putio as putio
 
 # Arguments passed by Kodi
-PLUGIN_URL = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
-PLUGIN_HANDLE = int(sys.argv[1])  # process handle, as a numeric string
-ITEM_ID = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
+__url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
+__handle__ = int(sys.argv[1])  # process handle, as a numeric string
+__item__ = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
 
 PUTIO_ADDON = xbmcaddon.Addon('plugin.video.putiov2')
 RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'images')
@@ -65,20 +65,19 @@ def populate_dir(files):
                               thumbnailImage=screenshot)
         # http://kodi.wiki/view/InfoLabels
         # I think they don't have any effect at all.
-        li.setInfo(type=item.content_type,
-                   infoLabels={
-                       'size': item.size,
-                       'title': item.name,
-                   })
+        li.setInfo(type=item.content_type, infoLabels={'size': item.size, 'title': item.name, })
 
-        url = '%s?%s' % (PLUGIN_URL, item.id)
-        xbmcplugin.addDirectoryItem(handle=PLUGIN_HANDLE,
+        li.addContextMenuItems([('Refresh', 'Container.Refresh'), ('Go up', 'Action(ParentDir)')])
+
+        url = '%s?%s' % (__url__, item.id)
+        xbmcplugin.addDirectoryItem(handle=__handle__,
                                     url=url,
                                     listitem=li,
                                     isFolder='application/x-directory' == item.content_type)
-        xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+        xbmcplugin.addSortMethod(handle=__handle__,
+                                 sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
 
-    xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE)
+    xbmcplugin.endOfDirectory(handle=__handle__)
 
 
 def play(item):
@@ -91,11 +90,7 @@ def play(item):
                           label2=item.name,
                           iconImage=screenshot,
                           thumbnailImage=screenshot)
-    li.setInfo(type='video',
-               infoLabels={
-                   'size': item.size,
-                   'title': item.name,
-               })
+    li.setInfo(type='video', infoLabels={'size': item.size, 'title': item.name, })
     li.setProperty('IsPlayable', 'true')
 
     player = xbmc.Player()
@@ -134,16 +129,16 @@ class PutioApiHandler(object):
 
 def main():
     putio = PutioApiHandler(PUTIO_ADDON.getAddonInfo('id'))
-    if not ITEM_ID:
+    if not __item__:
         populate_dir(putio.list(parent=0))
         return
 
-    item = putio.get(id_=ITEM_ID)
+    item = putio.get(id_=__item__)
     if not item.content_type:
         return
 
     if item.content_type == 'application/x-directory':
-        populate_dir(putio.list(parent=ITEM_ID))
+        populate_dir(putio.list(parent=__item__))
         return
 
     play(item)
