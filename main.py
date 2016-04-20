@@ -92,7 +92,15 @@ def play(item):
                           iconImage=screenshot,
                           thumbnailImage=screenshot)
     li.setInfo(type='video', infoLabels={'size': item.size, 'title': item.name, })
-    li.setProperty(key='StartOffset', value=str(item.start_from))
+    # resume where it was left off
+    li.setProperty(key='startoffset', value=str(item.start_from))
+
+    # Put.io API doesn't provide video total time, so we have a silly hack here.
+    # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
+    # 30 seconds is totally arbitrary. No magic.
+    li.setProperty(key='resumetime', value=str(item.start_from))
+    if item.start_from < 30:
+        li.setProperty(key='totaltime', value=str(item.start_from))
 
     player = xbmc.Player()
     player.play(item=item.stream_url(), listitem=li)
