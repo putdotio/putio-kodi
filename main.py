@@ -28,12 +28,13 @@ import xbmcaddon
 import xbmcplugin
 import resources.lib.putio2 as putio2
 
-PLUGIN_ID = "plugin.video.putiov2"
+# Arguments passed by Kodi
+PLUGIN_URL = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
+PLUGIN_ID = int(sys.argv[1])  # process handle, as a numeric string
+ITEM_ID = sys.argv[2].lstrip("?")  # query string, ('?foo=bar&baz=quux')
 
-pluginUrl = sys.argv[0]
-pluginId = int(sys.argv[1])
-itemId = sys.argv[2].lstrip("?")
-addon = xbmcaddon.Addon(PLUGIN_ID)
+PUTIO_ADDON = xbmcaddon.Addon("plugin.video.putiov2")
+
 
 class PutioAuthFailureException(Exception):
     def __init__(self, header, message, duration=10000, icon="error.png"):
@@ -49,7 +50,7 @@ def populateDir(pluginUrl, pluginId, listing):
         if item.screenshot:
             screenshot = item.screenshot
         else:
-            screenshot = os.path.join(addon.getAddonInfo("path"),
+            screenshot = os.path.join(PUTIO_ADDON.getAddonInfo("path"),
                                       "resources", "images", "mid-folder.png")
 
         url = "%s?%s" % (pluginUrl, item.id)
@@ -148,28 +149,25 @@ class PutioApiHandler(object):
 
 # Main program
 def main():
-    putio = PutioApiHandler(addon.getAddonInfo("id"))
-    if itemId:
-        item = putio.getItem(itemId)
+    putio = PutioApiHandler(PUTIO_ADDON.getAddonInfo("id"))
+    if ITEM_ID:
+        item = putio.getItem(ITEM_ID)
         if item.content_type:
             if item.content_type == "application/x-directory":
-                populateDir(pluginUrl, pluginId, putio.getFolderListing(itemId))
+                populateDir(PLUGIN_URL, PLUGIN_ID, putio.getFolderListing(ITEM_ID))
             else:
                 play(item)
     else:
-        populateDir(pluginUrl, pluginId, putio.getRootListing())
+        populateDir(PLUGIN_URL, PLUGIN_ID, putio.getRootListing())
 
 try:
     main()
 except PutioAuthFailureException, e:
-    addonid = addon.getAddonInfo("id")
-    addon = xa.Addon(addonid)
-    #uniqueid = addon.getSetting('uniqueid')
-    #if not uniqueid:
+    addonid = PUTIO_ADDON.getAddonInfo("id")
+    addon = xbmcaddon.Addon(addonid)
     r = requests.get("https://put.io/xbmc/getuniqueid")
     o = json.loads(r.content)
     uniqueid = o['id']
-    #addon.setSetting("uniqueid", uniqueid)
 
     oauthtoken = addon.getSetting('oauthkey')
 
