@@ -1,0 +1,40 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ibrahim Gungor <igungor@gmail.com>\n"
+"Language-Team: Put.io developers <info@put.io>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+msgctxt "#32000"
+msgid "Put.io Settings"
+msgstr ""
+
+msgctxt "#32001"
+msgid "Authentication Failure"
+msgstr ""
+
+msgctxt "#32002"
+msgid "Please insert your oauth key settings!"
+msgstr ""
+
+msgctxt "#32003"
+msgid "OAuth2 Token"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Download Directory"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Refresh"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Go Up"
+msgstr ""

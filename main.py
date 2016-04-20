@@ -32,9 +32,11 @@ __url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
 __handle__ = int(sys.argv[1])  # process handle, as a numeric string
 __item__ = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
 
-PUTIO_ADDON = xbmcaddon.Addon('plugin.video.putiov2')
+__settings__ = xbmcaddon.Addon(id='plugin.video.putiov2')
+__lang__ = __settings__.getLocalizedString
+
 PUTIO_KODI_ENDPOINT = 'https://put.io/xbmc'
-RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'media')
+RESOURCE_PATH = os.path.join(__settings__.getAddonInfo('path'), 'resources', 'media')
 
 
 class PutioAuthFailureException(Exception):
@@ -67,14 +69,14 @@ def populate_dir(files):
         # I think they don't have any effect at all.
         li.setInfo(type=item.content_type, infoLabels={'size': item.size, 'title': item.name, })
 
-        li.addContextMenuItems([('Refresh', 'Container.Refresh'), ('Go up', 'Action(ParentDir)')])
+        li.addContextMenuItems([
+            # Refresh | Go Up
+            (__lang__(32005), 'Container.Refresh'), (__lang__(32006), 'Action(ParentDir)')
+        ])
 
         is_folder = item.content_type == 'application/x-directory'
         url = '%s?%s' % (__url__, item.id)
-        xbmcplugin.addDirectoryItem(handle=__handle__,
-                                    url=url,
-                                    listitem=li,
-                                    isFolder=is_folder)
+        xbmcplugin.addDirectoryItem(handle=__handle__, url=url, listitem=li, isFolder=is_folder)
         xbmcplugin.addSortMethod(handle=__handle__,
                                  sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
 
@@ -107,8 +109,8 @@ def play(item):
 
 
 class PutioApiHandler(object):
-    def __init__(self, pluginId):
-        self.addon = xbmcaddon.Addon(pluginId)
+    def __init__(self, plugin_id):
+        self.addon = xbmcaddon.Addon(plugin_id)
         self.oauthkey = self.addon.getSetting('oauthkey').replace('-', '')
         if not self.oauthkey:
             raise PutioAuthFailureException(header=self.addon.getLocalizedString(30001),
@@ -137,7 +139,7 @@ class PutioApiHandler(object):
 
 
 def main():
-    putio = PutioApiHandler(PUTIO_ADDON.getAddonInfo('id'))
+    putio = PutioApiHandler(__settings__.getAddonInfo('id'))
     if not __item__:
         populate_dir(putio.list(parent=0))
         return
@@ -149,7 +151,6 @@ def main():
     if item.content_type == 'application/x-directory':
         populate_dir(putio.list(parent=__item__))
         return
-
     play(item)
 
 
@@ -157,7 +158,7 @@ if __name__ == '__main__':
     try:
         main()
     except PutioAuthFailureException as e:
-        addonid = PUTIO_ADDON.getAddonInfo('id')
+        addonid = __settings__.getAddonInfo('id')
         addon = xbmcaddon.Addon(addonid)
         # FIXME: request might fail
         r = requests.get(PUTIO_KODI_ENDPOINT + '/getuniqueid')

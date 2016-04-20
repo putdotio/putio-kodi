@@ -9,6 +9,7 @@ Put.io Kodi addon.
 - Video resume support
 - Refresh directory
 - Sort files by name
+- Localization
 
 ## Planned Features
 
@@ -16,7 +17,7 @@ Put.io Kodi addon.
 - Download file
 - Show video files as watch/unwatched
 - Sort by filesize
-- Localization
+- Set mark on seek/play (broken xbmc.Player)
 
 ## Installation
 

@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ibrahim Gungor <igungor@gmail.com>\n"
+"Language-Team: Put.io developers <info@put.io>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32000"
+msgid "Put.io Settings"
+msgstr "Put.io Ayarları"
+
+msgctxt "#32001"
+msgid "Authentication Failure"
+msgstr "Oturum Hatası"
+
+msgctxt "#32002"
+msgid "Please insert your oauth key settings!"
+msgstr "Lutfen Oauth2 anahtarınızı girin!"
+
+msgctxt "#32003"
+msgid "OAuth2 Token"
+msgstr "OAuth2 Anahtarı"
+
+msgctxt "#32004"
+msgid "Download Directory"
+msgstr "İndirme Klasörü"
+
+msgctxt "#32005"
+msgid "Refresh"
+msgstr "Yenile"
+
+msgctxt "#32006"
+msgid "Go Up"
+msgstr "Yukarı Çık"
