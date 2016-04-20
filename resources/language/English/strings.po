@@ -11,30 +11,37 @@ msgstr ""
 "Language: en\n"
 "X-Generator: Poedit 1.8.7.1\n"
 
+# Settings 000-019
 msgctxt "#32000"
 msgid "Put.io Settings"
 msgstr ""
 
 msgctxt "#32001"
-msgid "Authentication Failure"
-msgstr ""
-
-msgctxt "#32002"
-msgid "Please insert your oauth key settings!"
-msgstr ""
-
-msgctxt "#32003"
 msgid "OAuth2 Token"
 msgstr ""
 
-msgctxt "#32004"
+msgctxt "#32002"
 msgid "Download Directory"
 msgstr ""
 
-msgctxt "#32005"
+msgctxt "#32003"
+msgid "Download Subtitles Automatically"
+msgstr ""
+
+# Error messages 020-039
+msgctxt "#32020"
+msgid "Authentication Failure"
+msgstr ""
+
+msgctxt "#32021"
+msgid "Please insert your oauth key settings!"
+msgstr ""
+
+# Context Menu 040-059
+msgctxt "#32040"
 msgid "Refresh"
 msgstr ""
 
-msgctxt "#32006"
+msgctxt "#32041"
 msgid "Go Up"
 msgstr ""

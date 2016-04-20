@@ -71,7 +71,7 @@ def populate_dir(files):
 
         li.addContextMenuItems([
             # Refresh | Go Up
-            (__lang__(32005), 'Container.Refresh'), (__lang__(32006), 'Action(ParentDir)')
+            (__lang__(32040), 'Container.Refresh'), (__lang__(32041), 'Action(ParentDir)')
         ])
 
         is_folder = item.content_type == 'application/x-directory'
@@ -111,12 +111,11 @@ def play(item):
 
 
 class PutioApiHandler(object):
-    def __init__(self, plugin_id):
-        self.addon = xbmcaddon.Addon(plugin_id)
-        self.oauthkey = self.addon.getSetting('oauthkey').replace('-', '')
+    def __init__(self):
+        self.oauthkey = __settings__.getSetting('oauthkey').replace('-', '')
         if not self.oauthkey:
-            raise PutioAuthFailureException(header=self.addon.getLocalizedString(30001),
-                                            message=self.addon.getLocalizedString(30002))
+            raise PutioAuthFailureException(header=__lang__(30001),
+                                            message=__lang__(30002))
         self.apiclient = putio.Client(self.oauthkey)
 
     def get(self, id_):
@@ -141,7 +140,7 @@ class PutioApiHandler(object):
 
 
 def main():
-    handler = PutioApiHandler(__settings__.getAddonInfo('id'))
+    handler = PutioApiHandler()
     if not __item__:
         populate_dir(handler.list(parent=0))
         return
@@ -160,30 +159,27 @@ if __name__ == '__main__':
     try:
         main()
     except PutioAuthFailureException as e:
-        addonid = __settings__.getAddonInfo('id')
-        addon = xbmcaddon.Addon(addonid)
         # FIXME: request might fail
         r = requests.get(PUTIO_KODI_ENDPOINT + '/getuniqueid')
         # FIXME: json parsing might fail
         uniqueid = r.json()['id']
 
-        oauthtoken = addon.getSetting('oauthkey')
-
-        if not oauthtoken:
+        oauth2_token = __settings__.getSetting('oauth2_token')
+        if not oauth2_token:
             dialog = xbmcgui.Dialog()
-            dialog.ok('Oauth2 Key Required',
+            dialog.ok('OAuth2 Key Required',
                       'Visit put.io/xbmc and enter this code: %s\nthen press OK.' % uniqueid)
 
-        while not oauthtoken:
+        while not oauth2_token:
             try:
                 # now we'll try getting oauth key by giving our uniqueid
                 r = requests.get(PUTIO_KODI_ENDPOINT + '/k/%s' % uniqueid)
-                oauthtoken = r.json()['oauthtoken']
-                if oauthtoken:
-                    addon.setSetting('oauthkey', str(oauthtoken))
+                oauth2_token = r.json()['oauthtoken']
+                if oauth2_token:
+                    __settings__.setSetting('oauth2_token', str(oauth2_token))
                     main()
             except Exception as e:
                 dialog = xbmcgui.Dialog()
-                dialog.ok('Oauth Key Error', str(e))
+                dialog.ok('OAuth2 Token Error', str(e))
                 raise e
             time.sleep(1)
