@@ -141,17 +141,17 @@ class PutioApiHandler(object):
 
 
 def main():
-    putio = PutioApiHandler(__settings__.getAddonInfo('id'))
+    handler = PutioApiHandler(__settings__.getAddonInfo('id'))
     if not __item__:
-        populate_dir(putio.list(parent=0))
+        populate_dir(handler.list(parent=0))
         return
 
-    item = putio.get(id_=__item__)
+    item = handler.get(id_=__item__)
     if not item.content_type:
         return
 
     if item.content_type == 'application/x-directory':
-        populate_dir(putio.list(parent=__item__))
+        populate_dir(handler.list(parent=__item__))
         return
     play(item)
 
