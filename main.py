@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 # put.io kodi addon
 # Copyright (C) 2009  Alper Kanat <alper@put.io>
@@ -19,9 +19,9 @@
 
 import os
 import sys
-import requests
-import json
 import time
+import requests
+
 import xbmc
 import xbmcgui
 import xbmcaddon
@@ -30,18 +30,26 @@ import resources.lib.putio2 as putio2
 
 # Arguments passed by Kodi
 PLUGIN_URL = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
-PLUGIN_ID = int(sys.argv[1])  # process handle, as a numeric string
-ITEM_ID = sys.argv[2].lstrip("?")  # query string, ('?foo=bar&baz=quux')
+PLUGIN_HANDLE = int(sys.argv[1])  # process handle, as a numeric string
+ITEM_ID = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
 
-PUTIO_ADDON = xbmcaddon.Addon("plugin.video.putiov2")
+PUTIO_ADDON = xbmcaddon.Addon('plugin.video.putiov2')
+RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'images')
+PUTIO_KODI_ENDPOINT = 'https://put.io/xbmc'
 
 
 class PutioAuthFailureException(Exception):
-    def __init__(self, header, message, duration=10000, icon="error.png"):
+    def __init__(self, header, message, duration=10000, icon='error.png'):
         self.header = header
         self.message = message
         self.duration = duration
         self.icon = icon
+
+
+def get_resource_path(filename):
+    if not filename:
+        return
+    return os.path.join(RESOURCE_PATH, filename)
 
 
 def populate_dir(files):
@@ -49,31 +57,23 @@ def populate_dir(files):
         if item.screenshot:
             screenshot = item.screenshot
         else:
-            screenshot = os.path.join(PUTIO_ADDON.getAddonInfo("path"),
-                                      "resources", "images", "mid-folder.png")
+            screenshot = get_resource_path('mid-folder.png')
 
-        url = "%s?%s" % (PLUGIN_URL, item.id)
-        listItem = xbmcgui.ListItem(
-            item.name,
-            item.name,
-            screenshot,
-            screenshot
-        )
+        li = xbmcgui.ListItem(label=item.name,
+                              label2=item.name,
+                              iconImage=screenshot,
+                              thumbnailImage=screenshot)
+        li.setInfo(item.content_type, {'originaltitle': item.name,
+                                       'title': item.name,
+                                       'sorttitle': item.name})
 
-        listItem.setInfo(item.content_type, {
-               'originaltitle': item.name,
-               'title': item.name,
-               'sorttitle':item.name
-        })
+        url = '%s?%s' % (PLUGIN_URL, item.id)
+        xbmcplugin.addDirectoryItem(handle=PLUGIN_HANDLE,
+                                    url=url,
+                                    listitem=li,
+                                    isFolder='application/x-directory' == item.content_type)
 
-        xbmcplugin.addDirectoryItem(
-            PLUGIN_ID,
-            url,
-            listItem,
-            "application/x-directory" == item.content_type
-        )
-
-    xbmcplugin.endOfDirectory(PLUGIN_ID)
+    xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE)
 
 
 def play(item):
@@ -82,27 +82,23 @@ def play(item):
     else:
         screenshot = item.icon
 
-    listItem = xbmcgui.ListItem(
-        item.name,
-        item.name,
-        screenshot,
-        screenshot
-    )
-    listItem.setInfo('video', {'Title': item.name})
+    li = xbmcgui.ListItem(label=item.name,
+                          label2=item.name,
+                          iconImage=screenshot,
+                          thumbnailImage=screenshot)
+    li.setInfo('video', {'Title': item.name})
 
     player = xbmc.Player()
-    player.play(item.stream_url, listItem)
+    player.play(item=item.stream_url, listitem=li)
 
 
 class PutioApiHandler(object):
     def __init__(self, pluginId):
         self.addon = xbmcaddon.Addon(pluginId)
-        self.oauthkey = self.addon.getSetting("oauthkey").replace('-', '')
+        self.oauthkey = self.addon.getSetting('oauthkey').replace('-', '')
         if not self.oauthkey:
-            raise PutioAuthFailureException(
-                self.addon.getLocalizedString(30001),
-                self.addon.getLocalizedString(30002)
-            )
+            raise PutioAuthFailureException(header=self.addon.getLocalizedString(30001),
+                                            message=self.addon.getLocalizedString(30002))
         self.apiclient = putio2.Client(self.oauthkey)
 
     def get(self, id_):
@@ -120,14 +116,14 @@ class PutioApiHandler(object):
             return True
         elif 'video' in item.content_type:
             return True
-        elif "application/x-directory" in item.content_type:
+        elif 'application/x-directory' in item.content_type:
             return True
         else:
             return False
 
 
 def main():
-    putio = PutioApiHandler(PUTIO_ADDON.getAddonInfo("id"))
+    putio = PutioApiHandler(PUTIO_ADDON.getAddonInfo('id'))
     if not ITEM_ID:
         populate_dir(putio.list(parent=0))
         return
@@ -136,7 +132,7 @@ def main():
     if not item.content_type:
         return
 
-    if item.content_type == "application/x-directory":
+    if item.content_type == 'application/x-directory':
         populate_dir(putio.list(parent=ITEM_ID))
         return
 
@@ -147,30 +143,30 @@ if __name__ == '__main__':
     try:
         main()
     except PutioAuthFailureException, e:
-        addonid = PUTIO_ADDON.getAddonInfo("id")
+        addonid = PUTIO_ADDON.getAddonInfo('id')
         addon = xbmcaddon.Addon(addonid)
-        r = requests.get("https://put.io/xbmc/getuniqueid")
-        o = json.loads(r.content)
-        uniqueid = o['id']
+        # FIXME: request might fail
+        r = requests.get(PUTIO_KODI_ENDPOINT + '/getuniqueid')
+        # FIXME: json parsing might fail
+        uniqueid = r.json()['id']
 
         oauthtoken = addon.getSetting('oauthkey')
 
         if not oauthtoken:
             dialog = xbmcgui.Dialog()
-            dialog.ok("Oauth2 Key Required",
-                    "Visit put.io/xbmc and enter this code: %s\nthen press OK." % uniqueid)
+            dialog.ok('Oauth2 Key Required',
+                      'Visit put.io/xbmc and enter this code: %s\nthen press OK.' % uniqueid)
 
         while not oauthtoken:
             try:
                 # now we'll try getting oauth key by giving our uniqueid
-                r = requests.get("http://put.io/xbmc/k/%s" % uniqueid)
-                o = json.loads(r.content)
-                oauthtoken = o['oauthtoken']
+                r = requests.get(PUTIO_KODI_ENDPOINT + '/k/%s' % uniqueid)
+                oauthtoken = r.json()['oauthtoken']
                 if oauthtoken:
-                    addon.setSetting("oauthkey", str(oauthtoken))
+                    addon.setSetting('oauthkey', str(oauthtoken))
                     main()
             except Exception as e:
                 dialog = xbmcgui.Dialog()
-                dialog.ok("Oauth Key Error", str(e))
+                dialog.ok('Oauth Key Error', str(e))
                 raise e
             time.sleep(1)
