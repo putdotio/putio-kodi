@@ -1,9 +1,31 @@
-putio-xbmc-v2
-=============
+# putio-kodi
 
-Put.io xbmc addon with api v2
-xbmc.put.io-v2/ folder is the xbmc addon
+Put.io Kodi addon.
 
-Tried and works with xbmc v12 frodo.
+## Features
 
+- Walk files
+- Play audios and videos
+- Video resume support
+- Refresh directory
+- Sort files by name
 
+## Planned Features
+
+- Delete file/directory
+- Download file
+- Show video files as watch/unwatched
+- Sort by filesize
+- Localization
+
+## Installation
+
+Install from Kodi Add-ons.
+
+## Development
+
+```sh
+git clone https://github.com/putdotio/putio-kodi.git plugin.video.putio
+zip -r plugin.video.putio.zip plugin.video.putio
+```
+Install the zip file from Kodi Add-on -> Install from zip file.
