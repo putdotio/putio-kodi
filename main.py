@@ -28,14 +28,13 @@ import xbmcaddon
 import xbmcplugin
 import resources.lib.putio as putio
 
-# Arguments passed by Kodi
 __url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
 __handle__ = int(sys.argv[1])  # process handle, as a numeric string
 __item__ = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
 
 PUTIO_ADDON = xbmcaddon.Addon('plugin.video.putiov2')
-RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'images')
 PUTIO_KODI_ENDPOINT = 'https://put.io/xbmc'
+RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'images')
 
 
 class PutioAuthFailureException(Exception):
@@ -63,17 +62,19 @@ def populate_dir(files):
                               label2=item.name,
                               iconImage=screenshot,
                               thumbnailImage=screenshot)
+
         # http://kodi.wiki/view/InfoLabels
         # I think they don't have any effect at all.
         li.setInfo(type=item.content_type, infoLabels={'size': item.size, 'title': item.name, })
 
         li.addContextMenuItems([('Refresh', 'Container.Refresh'), ('Go up', 'Action(ParentDir)')])
 
+        is_folder = item.content_type == 'application/x-directory'
         url = '%s?%s' % (__url__, item.id)
         xbmcplugin.addDirectoryItem(handle=__handle__,
                                     url=url,
                                     listitem=li,
-                                    isFolder='application/x-directory' == item.content_type)
+                                    isFolder=is_folder)
         xbmcplugin.addSortMethod(handle=__handle__,
                                  sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
 
@@ -91,7 +92,7 @@ def play(item):
                           iconImage=screenshot,
                           thumbnailImage=screenshot)
     li.setInfo(type='video', infoLabels={'size': item.size, 'title': item.name, })
-    li.setProperty('IsPlayable', 'true')
+    li.setProperty(key='StartOffset', value=str(item.start_from))
 
     player = xbmc.Player()
     player.play(item=item.stream_url(), listitem=li)
