@@ -77,6 +77,7 @@ def populate_dir(files):
                                     url=url,
                                     listitem=li,
                                     isFolder='application/x-directory' == item.content_type)
+        xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL)
 
     xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE)
 
