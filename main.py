@@ -104,6 +104,8 @@ def play(item):
     if item.start_from < 30:
         li.setProperty(key='totaltime', value=str(item.start_from))
 
+    li.setSubtitles([item.subtitles()])
+
     player = xbmc.Player()
     player.play(item=item.stream_url(), listitem=li)
 

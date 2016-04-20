@@ -163,8 +163,13 @@ class _File(_BaseResource):
         t = d['file']
         return cls(t)
 
+    # TODO: temporarily added.
     def stream_url(self):
         return BASE_URL + '/files/%s/stream?oauth_token=%s' % (self.id, self.client.access_token)
+
+    # TODO: temporarily added.
+    def subtitles(self, key='default'):
+        return BASE_URL + '/files/%s/subtitles/%s?oauth_token=%s' % (self.id, key, self.client.access_token)
 
     @classmethod
     def list(cls, parent_id=0):
