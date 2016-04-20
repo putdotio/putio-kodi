@@ -159,9 +159,12 @@ class _File(_BaseResource):
 
     @classmethod
     def get(cls, id):
-        d = cls.client.request('/files/%s' % id, method='GET')
+        d = cls.client.request('/files/%s?start_from=1' % id, method='GET')
         t = d['file']
         return cls(t)
+
+    def stream_url(self):
+        return BASE_URL + '/files/%s/stream?oauth_token=%s' % (self.id, self.client.access_token)
 
     @classmethod
     def list(cls, parent_id=0):
