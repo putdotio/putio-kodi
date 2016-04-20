@@ -26,7 +26,7 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 import xbmcplugin
-import resources.lib.putio2 as putio2
+import resources.lib.putio as putio
 
 # Arguments passed by Kodi
 PLUGIN_URL = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
@@ -63,9 +63,14 @@ def populate_dir(files):
                               label2=item.name,
                               iconImage=screenshot,
                               thumbnailImage=screenshot)
-        li.setInfo(item.content_type, {'originaltitle': item.name,
-                                       'title': item.name,
-                                       'sorttitle': item.name})
+        # http://kodi.wiki/view/InfoLabels
+        # I think they don't have any effect at all.
+        li.setInfo(type=item.content_type,
+                   infoLabels={
+                       'title': item.name,
+                       'sorttitle': item.name,
+                       'originaltitle': item.name,
+                   })
 
         url = '%s?%s' % (PLUGIN_URL, item.id)
         xbmcplugin.addDirectoryItem(handle=PLUGIN_HANDLE,
@@ -86,10 +91,15 @@ def play(item):
                           label2=item.name,
                           iconImage=screenshot,
                           thumbnailImage=screenshot)
-    li.setInfo('video', {'Title': item.name})
+    li.setInfo(type='video',
+               infoLabels={
+                   'title': item.name,
+                   'sorttitle': item.name,
+                   'originaltitle': item.name,
+               })
 
     player = xbmc.Player()
-    player.play(item=item.stream_url, listitem=li)
+    player.play(item=item.stream_url(), listitem=li)
 
 
 class PutioApiHandler(object):
@@ -99,10 +109,10 @@ class PutioApiHandler(object):
         if not self.oauthkey:
             raise PutioAuthFailureException(header=self.addon.getLocalizedString(30001),
                                             message=self.addon.getLocalizedString(30002))
-        self.apiclient = putio2.Client(self.oauthkey)
+        self.apiclient = putio.Client(self.oauthkey)
 
     def get(self, id_):
-        return self.apiclient.File.GET(id_)
+        return self.apiclient.File.get(id_)
 
     def list(self, parent=0):
         items = []
@@ -142,7 +152,7 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except PutioAuthFailureException, e:
+    except PutioAuthFailureException as e:
         addonid = PUTIO_ADDON.getAddonInfo('id')
         addon = xbmcaddon.Addon(addonid)
         # FIXME: request might fail
