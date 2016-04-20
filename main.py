@@ -34,7 +34,7 @@ __item__ = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
 
 PUTIO_ADDON = xbmcaddon.Addon('plugin.video.putiov2')
 PUTIO_KODI_ENDPOINT = 'https://put.io/xbmc'
-RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'images')
+RESOURCE_PATH = os.path.join(PUTIO_ADDON.getAddonInfo('path'), 'resources', 'media')
 
 
 class PutioAuthFailureException(Exception):
