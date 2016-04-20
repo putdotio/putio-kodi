@@ -1,7 +1,8 @@
 # coding: utf-8
-#
-# put.io xbmc addon
+
+# put.io kodi addon
 # Copyright (C) 2009  Alper Kanat <alper@put.io>
+# Copyright (C) 2016  Put.io Developers <devs@put.io>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
 
 import os
 import sys
@@ -23,7 +23,9 @@ import requests
 import json
 import time
 import xbmc
-import xbmcaddon as xa
+import xbmcgui
+import xbmcaddon
+import xbmcplugin
 import resources.lib.putio2 as putio2
 
 PLUGIN_ID = "plugin.video.putiov2"
@@ -31,20 +33,7 @@ PLUGIN_ID = "plugin.video.putiov2"
 pluginUrl = sys.argv[0]
 pluginId = int(sys.argv[1])
 itemId = sys.argv[2].lstrip("?")
-addon = xa.Addon(PLUGIN_ID)
-
-try:
-    thegui = xg
-except:
-    import xbmcgui
-    thegui = xbmcgui
-
-try:
-    thexp = xp
-except:
-    import xbmcplugin
-    thexp = xbmcplugin
-
+addon = xbmcaddon.Addon(PLUGIN_ID)
 
 class PutioAuthFailureException(Exception):
     def __init__(self, header, message, duration=10000, icon="error.png"):
@@ -64,7 +53,7 @@ def populateDir(pluginUrl, pluginId, listing):
                                       "resources", "images", "mid-folder.png")
 
         url = "%s?%s" % (pluginUrl, item.id)
-        listItem = thegui.ListItem(
+        listItem = xbmcgui.ListItem(
             item.name,
             item.name,
             screenshot,
@@ -77,14 +66,14 @@ def populateDir(pluginUrl, pluginId, listing):
                'sorttitle':item.name
         })
 
-        thexp.addDirectoryItem(
+        xbmcplugin.addDirectoryItem(
             pluginId,
             url,
             listItem,
             "application/x-directory" == item.content_type
         )
 
-    thexp.endOfDirectory(pluginId)
+    xbmcplugin.endOfDirectory(pluginId)
 
 
 def play(item):
@@ -95,7 +84,7 @@ def play(item):
     else:
         screenshot = item.icon
 
-    listItem = thegui.ListItem(
+    listItem = xbmcgui.ListItem(
         item.name,
         item.name,
         screenshot,
@@ -104,19 +93,6 @@ def play(item):
 
     listItem.setInfo('video', {'Title': item.name})
     player.play(item.stream_url, listItem)
-
-    #subtitles = item.subtitle
-    #count = 0
-    #while not xbmc.Player().isPlaying():
-    #    xbmc.sleep(1000)
-    #    count += 1
-    #    if count > 20:
-    #        break
-    #if xbmc.Player().isPlaying():
-    #    for subtitle in subtitles:
-    #        if os.path.isfile(subtitle):
-    #            xbmc.Player().setSubtitles(subtitle)
-    #            xbmc.Player().showSubtitles(True)
 
 
 class PutioApiHandler(object):
@@ -129,7 +105,7 @@ class PutioApiHandler(object):
     subtitleTypes = ("srt", "sub")
 
     def __init__(self, pluginId):
-        self.addon = xa.Addon(pluginId)
+        self.addon = xbmcaddon.Addon(pluginId)
         self.oauthkey = self.addon.getSetting("oauthkey").replace('-', '')
         if not self.oauthkey:
             raise PutioAuthFailureException(
