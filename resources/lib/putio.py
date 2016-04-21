@@ -171,9 +171,24 @@ class _File(_BaseResource):
     def subtitles(self, key='default'):
         return BASE_URL + '/files/%s/subtitles/%s?oauth_token=%s' % (self.id, key, self.client.access_token)
 
+    # TODO: temporarily added.
+    @property
+    def is_video(self):
+        return 'video' in self.content_type
+
+    # TODO: temporarily added.
+    @property
+    def is_audio(self):
+        return 'audio' in self.content_type
+
+    # TODO: temporarily added.
+    @property
+    def is_folder(self):
+        return self.content_type == 'application/x-directory'
+
     @classmethod
     def list(cls, parent_id=0):
-        d = cls.client.request('/files/list', params={'parent_id': parent_id})
+        d = cls.client.request('/files/list?start_from=1', params={'parent_id': parent_id})
         files = d['files']
         return [cls(f) for f in files]
 

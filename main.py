@@ -70,14 +70,9 @@ class PutioApiHandler(object):
         return items
 
     def is_showable(self, item):
-        if 'audio' in item.content_type:
+        if item.is_audio or item.is_video or item.is_folder:
             return True
-        elif 'video' in item.content_type:
-            return True
-        elif 'application/x-directory' in item.content_type:
-            return True
-        else:
-            return False
+        return False
 
 
 # callbacks are not working at all! we need them to save the videos last position.
@@ -123,29 +118,36 @@ def populate_dir(files):
     list_items = []
     for item in files:
         thumbnail = item.screenshot or get_resource_path('mid-folder.png')
-        is_folder = item.content_type == 'application/x-directory'
-        if is_folder:
-            url = build_url(action='list', item=item.id)
-        else:
-            url = build_url(action='play', item=item.id)
-
-        delete_ctx_url = build_url(action='delete', item=item.id)
-
         li = xbmcgui.ListItem(label=item.name,
                               label2=item.name,
                               iconImage=thumbnail,
                               thumbnailImage=thumbnail)
 
 
-        # http://kodi.wiki/view/InfoLabels
-        # I think they don't have any effect at all.
-        li.setInfo(type=item.content_type, infoLabels={'size': item.size, 'title': item.name, })
+        # url when a delete action is triggered
+        delete_ctx_url = build_url(action='delete', item=item.id)
+
+        if item.is_folder:
+            url = build_url(action='list', item=item.id)
+        else:  # video or audio, no other types are available here
+            url = build_url(action='play', item=item.id)
+            li.setProperty(key='isplayable', value='true')
+
+            # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
+            # FIXME: get total-time of the file and set to 'totaltime'
+            li.setProperty(key='resumetime', value=str(item.start_from))
+            li.setProperty(key='totaltime', value=str(20*60))
+
+            # http://kodi.wiki/view/InfoLabels
+            type_ = 'video' if item.is_video else 'audio'
+            li.setInfo(type=type_, infoLabels={'size': item.size, 'title': item.name})
+
         li.addContextMenuItems([
             (__lang__(32040), 'Container.Refresh'),  # refresh
             (__lang__(32041), 'Action(ParentDir)'),  # go-up
             (__lang__(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url), # delete
         ])
-        list_items.append((url, li, is_folder))
+        list_items.append((url, li, item.is_folder))
 
     xbmcplugin.addDirectoryItems(handle=__handle__, items=list_items, totalItems=len(list_items))
     xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
@@ -164,13 +166,7 @@ def play(item):
     li.setInfo(type='video', infoLabels={'size': item.size, 'title': item.name, })
     # resume where it was left off
     li.setProperty(key='startoffset', value=str(item.start_from))
-
-    # Put.io API doesn't provide video total time, so we have a silly hack here.
-    # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
-    # 30 seconds is totally arbitrary. No magic.
-    li.setProperty(key='resumetime', value=str(item.start_from))
-    if item.start_from < 30:
-        li.setProperty(key='totaltime', value=str(item.start_from))
+    li.setProperty(key='IsPlayable', value='true')
 
     li.setSubtitles([item.subtitles()])
 
