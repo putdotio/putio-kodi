@@ -46,3 +46,7 @@ msgstr "Yenile"
 msgctxt "#32041"
 msgid "Go Up"
 msgstr "Yukarı Çık"
+
+msgctxt "#32042"
+msgid "Delete"
+msgstr "Sil"
