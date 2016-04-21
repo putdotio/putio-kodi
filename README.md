@@ -28,6 +28,6 @@ Install from Kodi Add-ons repository.
 
 ```sh
 git clone https://github.com/putdotio/putio-kodi.git plugin.video.putio
-zip -r plugin.video.putio.zip plugin.video.putio
+make
 ```
-Install the zip file from Kodi Add-on -> Install from zip file.
+Install the generated zip file from Kodi Add-on -> Install from zip file.
