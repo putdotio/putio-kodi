@@ -40,6 +40,7 @@ RESOURCE_PATH = os.path.join(__settings__.getAddonInfo('path'), 'resources', 'me
 
 
 class PutioAuthFailureException(Exception):
+    """An authentication error occured."""
     def __init__(self, header, message, duration=10000, icon='error.png'):
         self.header = header
         self.message = message
@@ -47,13 +48,71 @@ class PutioAuthFailureException(Exception):
         self.icon = icon
 
 
+class PutioApiHandler(object):
+    """A Put.io API client helper."""
+    def __init__(self):
+        oauth2_token = __settings__.getSetting('oauth2_token').replace('-', '')
+        if not oauth2_token:
+            raise PutioAuthFailureException(header=__lang__(30001),
+                                            message=__lang__(30002))
+        self.apiclient = putio.Client(oauth2_token)
+
+    def get(self, id_):
+        return self.apiclient.File.get(id_)
+
+    def list(self, parent=0):
+        items = []
+        for item in self.apiclient.File.list(parent_id=parent):
+            if item.content_type and self.is_showable(item):
+                items.append(item)
+        return items
+
+    def is_showable(self, item):
+        if 'audio' in item.content_type:
+            return True
+        elif 'video' in item.content_type:
+            return True
+        elif 'application/x-directory' in item.content_type:
+            return True
+        else:
+            return False
+
+
+# callbacks are not working at all! we need them to save the videos last position.
+# See: http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmc.html#Player
+class Player(xbmc.Player):
+    """An XBMC Player. Callbacks are not working though."""
+    def __init__(self):
+        xbmc.Player.__init__(self)
+
+    def onPlayBackStarted(self):
+        xbmc.log('********** started')
+
+    def onPlayBackPaused(self):
+        xbmc.log('********** paused')
+
+    def onPlayBackResumed(self):
+        xbmc.log('********** resumed')
+
+    def onPlayBackSeek(self, time, offset):
+        xbmc.log('********** seeked to %s' % time)
+
+    def onPlayBackStopped(self):
+        xbmc.log('********** stopped')
+
+    def onPlayBackEnded(self):
+        xbmc.log('********** ended')
+
+
 def get_resource_path(filename):
+    """Returns special path of the given filename."""
     if not filename:
         return
     return os.path.join(RESOURCE_PATH, filename)
 
 
 def populate_dir(files):
+    """Fills a directory listing with put.io files."""
     for item in files:
         if item.screenshot:
             screenshot = item.screenshot
@@ -84,6 +143,7 @@ def populate_dir(files):
 
 
 def play(item):
+    """Plays the given item from where it was left off"""
     if item.screenshot:
         screenshot = item.screenshot
     else:
@@ -106,40 +166,13 @@ def play(item):
 
     li.setSubtitles([item.subtitles()])
 
-    player = xbmc.Player()
+    player = Player()
     player.play(item=item.stream_url(), listitem=li)
 
 
-class PutioApiHandler(object):
-    def __init__(self):
-        oauth2_token = __settings__.getSetting('oauth2_token').replace('-', '')
-        if not oauth2_token:
-            raise PutioAuthFailureException(header=__lang__(30001),
-                                            message=__lang__(30002))
-        self.apiclient = putio.Client(oauth2_token)
-
-    def get(self, id_):
-        return self.apiclient.File.get(id_)
-
-    def list(self, parent=0):
-        items = []
-        for item in self.apiclient.File.list(parent_id=parent):
-            if item.content_type and self.is_showable(item):
-                items.append(item)
-        return items
-
-    def is_showable(self, item):
-        if 'audio' in item.content_type:
-            return True
-        elif 'video' in item.content_type:
-            return True
-        elif 'application/x-directory' in item.content_type:
-            return True
-        else:
-            return False
-
 
 def main():
+    """Dispatches the commands."""
     handler = PutioApiHandler()
     if not __item__:
         populate_dir(handler.list(parent=0))
