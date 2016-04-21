@@ -129,7 +129,6 @@ def populate_dir(files):
             url = build_url(action='list', item=item.id)
         else:  # video or audio, no other types are available here
             url = build_url(action='play', item=item.id)
-            li.setProperty(key='isplayable', value='true')
 
             # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
             # FIXME: get total-time of the file and set to 'totaltime'
