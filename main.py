@@ -112,7 +112,7 @@ def play(item):
 
 class PutioApiHandler(object):
     def __init__(self):
-        oauth2_token = __settings__.getSetting('oauthkey').replace('-', '')
+        oauth2_token = __settings__.getSetting('oauth2_token').replace('-', '')
         if not oauth2_token:
             raise PutioAuthFailureException(header=__lang__(30001),
                                             message=__lang__(30002))
