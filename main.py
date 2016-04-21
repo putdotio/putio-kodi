@@ -53,18 +53,17 @@ class PutioAuthFailureException(Exception):
 class PutioApiHandler(object):
     """A Put.io API client helper."""
 
-    def __init__(self):
-        oauth2_token = __settings__.getSetting('oauth2_token').replace('-', '')
+    def __init__(self, oauth2_token):
         if not oauth2_token:
             raise PutioAuthFailureException(header=__lang__(30001), message=__lang__(30002))
-        self.apiclient = putio.Client(oauth2_token)
+        self.client = putio.Client(oauth2_token)
 
     def get(self, id_):
-        return self.apiclient.File.get(id_)
+        return self.client.File.get(id_)
 
     def list(self, parent=0):
         items = []
-        for item in self.apiclient.File.list(parent_id=parent):
+        for item in self.client.File.list(parent_id=parent):
             if item.content_type and self.is_showable(item):
                 items.append(item)
         return items
@@ -190,7 +189,7 @@ def delete(item):
 
 def main():
     """Dispatches the commands."""
-    handler = PutioApiHandler()
+    handler = PutioApiHandler(__settings__.getSetting('oauth2_token'))
     item_id = __args__.get('item')
     if not item_id:
         populate_dir(handler.list(parent=0))
@@ -229,23 +228,18 @@ if __name__ == '__main__':
         # FIXME: json parsing might fail
         uniqueid = r.json()['id']
 
-        oauth2_token = __settings__.getSetting('oauth2_token')
-        if not oauth2_token:
-            xbmcgui.Dialog().ok(heading=__lang__(32022),
-                                line1=__lang__(32023) % uniqueid,
-                                line2=__lang__(32024))
+        xbmcgui.Dialog().ok(heading=__lang__(32022),
+                            line1=__lang__(32023) % uniqueid,
+                            line2=__lang__(32024))
 
-        while not oauth2_token:
-            try:
-                # now we'll try getting oauth key by giving our uniqueid
-                r = requests.get(PUTIO_KODI_ENDPOINT + '/k/%s' % uniqueid)
-                oauth2_token = r.json()['oauthtoken']
-                if oauth2_token:
-                    __settings__.setSetting('oauth2_token', str(oauth2_token))
-                    main()
-            except Exception as e:
-                xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e,
-                         level=xbmc.LOGERROR)
-                xbmcgui.Dialog().ok(header=__lang__(32020), header1=str(e))
-                raise e
-            time.sleep(1)
+        try:
+            # request oauth2 token in exchange to this unique id.
+            r = requests.get(PUTIO_KODI_ENDPOINT + '/k/%s' % uniqueid)
+            oauth2_token = r.json()['oauthtoken']
+            if oauth2_token:
+                __settings__.setSetting('oauth2_token', str(oauth2_token))
+                main()
+        except Exception as e:
+            xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e,
+                        level=xbmc.LOGERROR)
+            xbmcgui.Dialog().ok(header=__lang__(32020), header1=str(e))
