@@ -20,6 +20,7 @@
 import os
 import sys
 import time
+import urlparse
 import requests
 
 import xbmc
@@ -30,7 +31,7 @@ import resources.lib.putio as putio
 
 __url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
 __handle__ = int(sys.argv[1])  # process handle, as a numeric string
-__item__ = sys.argv[2].lstrip('?')  # query string, ('?foo=bar&baz=quux')
+__args__ = urlparse.parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.putiov2')
 __lang__ = __settings__.getLocalizedString
@@ -106,6 +107,10 @@ class Player(xbmc.Player):
         xbmc.log('********** ended')
 
 
+def build_url(action, item):
+    return '{0}?action={1}&item={2}'.format(__url__, action, item)
+
+
 def get_resource_path(filename):
     """Returns special path of the given filename."""
     if not filename:
@@ -133,7 +138,10 @@ def populate_dir(files):
         ])
 
         is_folder = item.content_type == 'application/x-directory'
-        url = '%s?%s' % (__url__, item.id)
+        if is_folder:
+            url = build_url(action='list', item=item.id)
+        else:
+            url = build_url(action='play', item=item.id)
 
         list_items.append((url, li, is_folder))
 
@@ -168,21 +176,42 @@ def play(item):
     player.play(item=item.stream_url(), listitem=li)
 
 
+def delete(item):
+    """Deletes the given item."""
+    xbmc.log('***** in delete. item_id: %s' % item.id)
+    return
+
+
 def main():
     """Dispatches the commands."""
     handler = PutioApiHandler()
-    if not __item__:
+    item_id = __args__.get('item')
+    if not item_id:
         populate_dir(handler.list(parent=0))
         return
 
-    item = handler.get(id_=__item__)
+    item_id = item_id[0]
+    item = handler.get(id_=item_id)
     if not item.content_type:
         return
 
-    if item.content_type == 'application/x-directory':
-        populate_dir(handler.list(parent=__item__))
+    # Dispatch commands
+    action = __args__.get('action')
+    if not action:
         return
-    play(item)
+
+    action = action[0]
+    if action == 'list':
+        populate_dir(handler.list(parent=item_id))
+        return
+
+    if action == 'delete':
+        delete(item=item)
+        return
+
+    if action == 'play':
+        play(item=item)
+        return
 
 
 if __name__ == '__main__':
