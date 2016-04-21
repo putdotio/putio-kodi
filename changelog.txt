@@ -1,6 +1,7 @@
 2016-04-21 Ibrahim Gungor <ibrahim@put.io>
     * Video resume support
     * Sort files by name
+    * Sort files by size
     * Delete file/directory support
     * Propery subtitle support
     * Refresh a directory for new changes

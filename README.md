@@ -10,15 +10,15 @@ Put.io Kodi addon.
 - Subtitle support
 - Refresh directory
 - Sort files by name
+- Sort files by size
 - Delete file/directory
 - Localization
 
 ## Planned Features
 
-- Download file
 - Show video files as watch/unwatched
-- Sort by filesize
 - Set mark on seek/play (broken xbmc.Player)
+- Download file
 
 ## Installation
 
