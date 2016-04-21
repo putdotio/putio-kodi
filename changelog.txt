@@ -1,3 +1,12 @@
+2016-04-21 Ibrahim Gungor <ibrahim@put.io>
+    * Video resume support
+    * Sort files by name
+    * Delete file/directory support
+    * Propery subtitle support
+    * Refresh a directory for new changes
+    * Go parent directory on context menu
+    * Add Turkish locale
+
 2014-03-04  Burak Sezer  <burak@pilli.com>
     * Improved authentication method
 
