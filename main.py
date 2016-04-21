@@ -123,11 +123,19 @@ def populate_dir(files):
     list_items = []
     for item in files:
         thumbnail = item.screenshot or get_resource_path('mid-folder.png')
+        is_folder = item.content_type == 'application/x-directory'
+        if is_folder:
+            url = build_url(action='list', item=item.id)
+        else:
+            url = build_url(action='play', item=item.id)
+
+        delete_ctx_url = build_url(action='delete', item=item.id)
 
         li = xbmcgui.ListItem(label=item.name,
                               label2=item.name,
                               iconImage=thumbnail,
                               thumbnailImage=thumbnail)
+
 
         # http://kodi.wiki/view/InfoLabels
         # I think they don't have any effect at all.
@@ -135,14 +143,8 @@ def populate_dir(files):
         li.addContextMenuItems([
             (__lang__(32040), 'Container.Refresh'),  # refresh
             (__lang__(32041), 'Action(ParentDir)'),  # go-up
+            (__lang__(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url), # delete
         ])
-
-        is_folder = item.content_type == 'application/x-directory'
-        if is_folder:
-            url = build_url(action='list', item=item.id)
-        else:
-            url = build_url(action='play', item=item.id)
-
         list_items.append((url, li, is_folder))
 
     xbmcplugin.addDirectoryItems(handle=__handle__, items=list_items, totalItems=len(list_items))
@@ -177,9 +179,11 @@ def play(item):
 
 
 def delete(item):
-    """Deletes the given item."""
-    xbmc.log('***** in delete. item_id: %s' % item.id)
-    return
+    """Deletes the given item and refreshes the current directory."""
+    if item.id == 0:
+        return
+    item.delete()
+    xbmc.executebuiltin('Container.Refresh')
 
 
 def main():
