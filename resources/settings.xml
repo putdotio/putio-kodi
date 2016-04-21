@@ -4,6 +4,5 @@
     <category label="32000">
         <setting id="oauth2_token" type="text"  label="32001" default="" />
         <setting id="download_dir" type="folder" label="32002" default="" />
-        <setting id="auto_fetch_subtitle" type="bool" label="32003" default="" />
     </category>
 </settings>
