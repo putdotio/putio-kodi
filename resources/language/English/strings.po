@@ -24,10 +24,6 @@ msgctxt "#32002"
 msgid "Download Directory"
 msgstr ""
 
-msgctxt "#32003"
-msgid "Download Subtitles Automatically"
-msgstr ""
-
 # Error messages 020-039
 msgctxt "#32020"
 msgid "Authentication Failure"
@@ -35,6 +31,18 @@ msgstr ""
 
 msgctxt "#32021"
 msgid "Please insert your oauth key settings!"
+msgstr ""
+
+msgctxt "#32022"
+msgid "OAuth2 Key Required"
+msgstr ""
+
+msgctxt "#32023"
+msgid "Visit put.io/xbmc and enter this code: %s"
+msgstr ""
+
+msgctxt "#32024"
+msgid "Then click OK"
 msgstr ""
 
 # Context Menu 040-059

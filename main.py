@@ -231,9 +231,9 @@ if __name__ == '__main__':
 
         oauth2_token = __settings__.getSetting('oauth2_token')
         if not oauth2_token:
-            dialog = xbmcgui.Dialog()
-            dialog.ok('OAuth2 Key Required',
-                      'Visit put.io/xbmc and enter this code: %s\nthen press OK.' % uniqueid)
+            xbmcgui.Dialog().ok(heading=__lang__(32022),
+                                line1=__lang__(32023) % uniqueid,
+                                line2=__lang__(32024))
 
         while not oauth2_token:
             try:
@@ -244,7 +244,8 @@ if __name__ == '__main__':
                     __settings__.setSetting('oauth2_token', str(oauth2_token))
                     main()
             except Exception as e:
-                dialog = xbmcgui.Dialog()
-                dialog.ok('OAuth2 Token Error', str(e))
+                xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e,
+                         level=xbmc.LOGERROR)
+                xbmcgui.Dialog().ok(header=__lang__(32020), header1=str(e))
                 raise e
             time.sleep(1)
