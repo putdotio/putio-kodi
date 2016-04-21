@@ -123,7 +123,6 @@ def populate_dir(files):
                               iconImage=thumbnail,
                               thumbnailImage=thumbnail)
 
-
         # url when a delete action is triggered
         delete_ctx_url = build_url(action='delete', item=item.id)
 
@@ -136,7 +135,7 @@ def populate_dir(files):
             # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
             # FIXME: get total-time of the file and set to 'totaltime'
             li.setProperty(key='resumetime', value=str(item.start_from))
-            li.setProperty(key='totaltime', value=str(20*60))
+            li.setProperty(key='totaltime', value=str(20 * 60))
 
             # http://kodi.wiki/view/InfoLabels
             type_ = 'video' if item.is_video else 'audio'
@@ -145,7 +144,7 @@ def populate_dir(files):
         li.addContextMenuItems([
             (__lang__(32040), 'Container.Refresh'),  # refresh
             (__lang__(32041), 'Action(ParentDir)'),  # go-up
-            (__lang__(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url), # delete
+            (__lang__(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url),  # delete
         ])
         list_items.append((url, li, item.is_folder))
 
@@ -178,6 +177,13 @@ def delete(item):
     """Deletes the given item and refreshes the current directory."""
     if item.id == 0:
         return
+
+    response = xbmcgui.Dialog().yesno(heading=__lang__(32060), line1=__lang__(32061))
+
+    # yes=1, no=0
+    if response == 0:
+        return
+
     item.delete()
     xbmc.executebuiltin('Container.Refresh')
 

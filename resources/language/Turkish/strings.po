@@ -50,3 +50,12 @@ msgstr "Yukarı Çık"
 msgctxt "#32042"
 msgid "Delete"
 msgstr "Sil"
+
+# Dialoglar 060-079
+msgctxt "#32060"
+msgid "Delete Confirmation"
+msgstr "Silme Onayı"
+
+msgctxt "#32061"
+msgid "Are you sure?"
+msgstr "Emin misiniz?"
