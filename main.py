@@ -41,6 +41,7 @@ RESOURCE_PATH = os.path.join(__settings__.getAddonInfo('path'), 'resources', 'me
 
 class PutioAuthFailureException(Exception):
     """An authentication error occured."""
+
     def __init__(self, header, message, duration=10000, icon='error.png'):
         self.header = header
         self.message = message
@@ -50,11 +51,11 @@ class PutioAuthFailureException(Exception):
 
 class PutioApiHandler(object):
     """A Put.io API client helper."""
+
     def __init__(self):
         oauth2_token = __settings__.getSetting('oauth2_token').replace('-', '')
         if not oauth2_token:
-            raise PutioAuthFailureException(header=__lang__(30001),
-                                            message=__lang__(30002))
+            raise PutioAuthFailureException(header=__lang__(30001), message=__lang__(30002))
         self.apiclient = putio.Client(oauth2_token)
 
     def get(self, id_):
@@ -82,6 +83,7 @@ class PutioApiHandler(object):
 # See: http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmc.html#Player
 class Player(xbmc.Player):
     """An XBMC Player. Callbacks are not working though."""
+
     def __init__(self):
         xbmc.Player.__init__(self)
 
@@ -113,46 +115,42 @@ def get_resource_path(filename):
 
 def populate_dir(files):
     """Fills a directory listing with put.io files."""
+    list_items = []
     for item in files:
-        if item.screenshot:
-            screenshot = item.screenshot
-        else:
-            screenshot = get_resource_path('mid-folder.png')
+        thumbnail = item.screenshot or get_resource_path('mid-folder.png')
 
         li = xbmcgui.ListItem(label=item.name,
                               label2=item.name,
-                              iconImage=screenshot,
-                              thumbnailImage=screenshot)
+                              iconImage=thumbnail,
+                              thumbnailImage=thumbnail)
 
         # http://kodi.wiki/view/InfoLabels
         # I think they don't have any effect at all.
         li.setInfo(type=item.content_type, infoLabels={'size': item.size, 'title': item.name, })
-
         li.addContextMenuItems([
-            # Refresh | Go Up
-            (__lang__(32040), 'Container.Refresh'), (__lang__(32041), 'Action(ParentDir)')
+            (__lang__(32040), 'Container.Refresh'),  # refresh
+            (__lang__(32041), 'Action(ParentDir)'),  # go-up
         ])
 
         is_folder = item.content_type == 'application/x-directory'
         url = '%s?%s' % (__url__, item.id)
-        xbmcplugin.addDirectoryItem(handle=__handle__, url=url, listitem=li, isFolder=is_folder)
-        xbmcplugin.addSortMethod(handle=__handle__,
-                                 sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
 
+        list_items.append((url, li, is_folder))
+
+    xbmcplugin.addDirectoryItems(handle=__handle__, items=list_items, totalItems=len(list_items))
+    xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+    xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_SIZE)
     xbmcplugin.endOfDirectory(handle=__handle__)
 
 
 def play(item):
     """Plays the given item from where it was left off"""
-    if item.screenshot:
-        screenshot = item.screenshot
-    else:
-        screenshot = item.icon
+    thumbnail = item.screenshot or item.icon
 
     li = xbmcgui.ListItem(label=item.name,
                           label2=item.name,
-                          iconImage=screenshot,
-                          thumbnailImage=screenshot)
+                          iconImage=thumbnail,
+                          thumbnailImage=thumbnail)
     li.setInfo(type='video', infoLabels={'size': item.size, 'title': item.name, })
     # resume where it was left off
     li.setProperty(key='startoffset', value=str(item.start_from))
@@ -168,7 +166,6 @@ def play(item):
 
     player = Player()
     player.play(item=item.stream_url(), listitem=li)
-
 
 
 def main():
