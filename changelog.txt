@@ -3,7 +3,7 @@
     * Sort files by name
     * Sort files by size
     * Delete file/directory support
-    * Propery subtitle support
+    * Proper subtitle support
     * Refresh a directory for new changes
     * Go parent directory on context menu
     * Add Turkish locale
