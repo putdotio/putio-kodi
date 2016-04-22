@@ -84,6 +84,7 @@ def populate_dir(files):
         list_items.append((url, li, item.is_folder))
 
     xbmcplugin.addDirectoryItems(handle=__handle__, items=list_items, totalItems=len(list_items))
+    xbmcplugin.setContent(handle=__handle__, content='files')
     xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
     xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_SIZE)
     xbmcplugin.endOfDirectory(handle=__handle__)
@@ -97,7 +98,12 @@ def play(item):
                           label2=item.name,
                           iconImage=thumbnail,
                           thumbnailImage=thumbnail)
-    li.setInfo(type='video', infoLabels={'size': item.size, 'title': item.name, })
+    li.setInfo(type='video',
+               infoLabels={
+                   'size': item.size,
+                   'title': item.name,
+                   'mediatype': 'video',
+               })
     # resume where it was left off
     li.setProperty(key='startoffset', value=str(item.start_from))
     li.setProperty(key='IsPlayable', value='true')
