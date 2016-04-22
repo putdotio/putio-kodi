@@ -6,8 +6,7 @@ import xbmc
 from resources.lib.putio import Client
 from resources.lib.helper import __settings__
 
-# FIXME: change 1 to 10
-POLL_INTERVAL = 10
+POLL_INTERVAL = 2
 PUTIO_API_ENDPOINT = 'https://api.put.io/v2'
 
 
