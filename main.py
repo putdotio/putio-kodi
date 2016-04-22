@@ -74,7 +74,7 @@ def populate_dir(files):
             li.setProperty(key='totaltime', value=str(20 * 60))
 
             # http://kodi.wiki/view/InfoLabels
-            type_ = 'video' if item.is_video else 'audio'
+            type_ = 'video' if item.is_video else 'music'
             li.setInfo(type=type_, infoLabels={'size': item.size, 'title': item.name})
 
         li.addContextMenuItems([
