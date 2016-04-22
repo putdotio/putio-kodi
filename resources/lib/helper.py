@@ -1,4 +1,5 @@
 import putio
+import xbmcgui
 import xbmcaddon
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.putio')
@@ -8,7 +9,7 @@ __lang__ = __settings__.getLocalizedString
 class PutioAuthFailureException(Exception):
     """An authentication error occured."""
 
-    def __init__(self, header, message, duration=10000, icon='error.png'):
+    def __init__(self, header, message, duration=10000, icon=xbmcgui.NOTIFICATION_ERROR):
         self.header = header
         self.message = message
         self.duration = duration
