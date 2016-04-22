@@ -21,10 +21,6 @@ msgctxt "#32001"
 msgid "OAuth2 Token"
 msgstr "OAuth2 Anahtarı"
 
-msgctxt "#32002"
-msgid "Download Directory"
-msgstr "İndirme Klasörü"
-
 # Hata mesajlari 020-039
 msgctxt "#32020"
 msgid "Authentication Failure"
