@@ -56,7 +56,7 @@ if __name__ == '__main__':
         item_id = paths.split('/')[1]
 
         # time to send a request
-        handler = Client(oauth2_token)
+        handler = Client(access_token=oauth2_token, use_retry=True)
         handler.request('/files/%s/start-from/set' % item_id,
                         method='POST',
                         data={'time': video_is_at})

@@ -21,7 +21,7 @@ class PutioApiHandler(object):
     def __init__(self, oauth2_token):
         if not oauth2_token:
             raise PutioAuthFailureException(header=__lang__(30001), message=__lang__(30002))
-        self.client = putio.Client(oauth2_token)
+        self.client = putio.Client(access_token=oauth2_token, use_retry=True)
 
     def get(self, id_):
         return self.client.File.get(id_)
