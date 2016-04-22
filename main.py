@@ -31,7 +31,7 @@ from resources.lib.helper import __settings__
 from resources.lib.helper import PutioApiHandler
 from resources.lib.helper import PutioAuthFailureException
 
-__url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
+__url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putio/')
 __handle__ = int(sys.argv[1])  # process handle, as a numeric string
 __args__ = urlparse.parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
 

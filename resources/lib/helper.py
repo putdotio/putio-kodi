@@ -1,7 +1,7 @@
 import putio
 import xbmcaddon
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.putiov2')
+__settings__ = xbmcaddon.Addon(id='plugin.video.putio')
 __lang__ = __settings__.getLocalizedString
 
 
