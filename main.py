@@ -24,7 +24,6 @@ import requests
 
 import xbmc
 import xbmcgui
-import xbmcaddon
 import xbmcplugin
 
 from resources.lib.helper import __lang__

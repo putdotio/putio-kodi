@@ -1,6 +1,3 @@
-import os
-import urlparse
-
 import xbmc
 
 from resources.lib.putio import Client
