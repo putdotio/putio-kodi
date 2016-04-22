@@ -14,12 +14,6 @@ Put.io Kodi addon.
 - Delete file/directory
 - Localization
 
-## Planned Features
-
-- Show video files as watch/unwatched
-- Set mark on seek/play (broken xbmc.Player)
-- Download file
-
 ## Installation
 
 Install from Kodi Add-ons repository.
