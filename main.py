@@ -19,7 +19,6 @@
 
 import os
 import sys
-import time
 import urlparse
 import requests
 
@@ -27,78 +26,18 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 import xbmcplugin
-import resources.lib.putio as putio
+
+from resources.lib.helper import __lang__
+from resources.lib.helper import __settings__
+from resources.lib.helper import PutioApiHandler
+from resources.lib.helper import PutioAuthFailureException
 
 __url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putiov2/')
 __handle__ = int(sys.argv[1])  # process handle, as a numeric string
 __args__ = urlparse.parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.putiov2')
-__lang__ = __settings__.getLocalizedString
-
 PUTIO_KODI_ENDPOINT = 'https://put.io/xbmc'
 RESOURCE_PATH = os.path.join(__settings__.getAddonInfo('path'), 'resources', 'media')
-
-
-class PutioAuthFailureException(Exception):
-    """An authentication error occured."""
-
-    def __init__(self, header, message, duration=10000, icon='error.png'):
-        self.header = header
-        self.message = message
-        self.duration = duration
-        self.icon = icon
-
-
-class PutioApiHandler(object):
-    """A Put.io API client helper."""
-
-    def __init__(self, oauth2_token):
-        if not oauth2_token:
-            raise PutioAuthFailureException(header=__lang__(30001), message=__lang__(30002))
-        self.client = putio.Client(oauth2_token)
-
-    def get(self, id_):
-        return self.client.File.get(id_)
-
-    def list(self, parent=0):
-        items = []
-        for item in self.client.File.list(parent_id=parent):
-            if item.content_type and self.is_showable(item):
-                items.append(item)
-        return items
-
-    def is_showable(self, item):
-        if item.is_audio or item.is_video or item.is_folder:
-            return True
-        return False
-
-
-# callbacks are not working at all! we need them to save the videos last position.
-# See: http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmc.html#Player
-class Player(xbmc.Player):
-    """An XBMC Player. Callbacks are not working though."""
-
-    def __init__(self):
-        xbmc.Player.__init__(self)
-
-    def onPlayBackStarted(self):
-        xbmc.log('********** started')
-
-    def onPlayBackPaused(self):
-        xbmc.log('********** paused')
-
-    def onPlayBackResumed(self):
-        xbmc.log('********** resumed')
-
-    def onPlayBackSeek(self, time, offset):
-        xbmc.log('********** seeked to %s' % time)
-
-    def onPlayBackStopped(self):
-        xbmc.log('********** stopped')
-
-    def onPlayBackEnded(self):
-        xbmc.log('********** ended')
 
 
 def build_url(action, item):
@@ -167,8 +106,7 @@ def play(item):
 
     li.setSubtitles([item.subtitles()])
 
-    player = Player()
-    player.play(item=item.stream_url(), listitem=li)
+    xbmc.Player().play(item=item.stream_url(), listitem=li)
 
 
 def delete(item):
@@ -188,6 +126,7 @@ def delete(item):
 
 def main():
     """Dispatches the commands."""
+
     handler = PutioApiHandler(__settings__.getSetting('oauth2_token'))
     item_id = __args__.get('item')
     if not item_id:
@@ -239,6 +178,5 @@ if __name__ == '__main__':
                 __settings__.setSetting('oauth2_token', str(oauth2_token))
                 main()
         except Exception as e:
-            xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e,
-                        level=xbmc.LOGERROR)
+            xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e, level=xbmc.LOGERROR)
             xbmcgui.Dialog().ok(header=__lang__(32020), header1=str(e))
