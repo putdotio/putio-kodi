@@ -46,10 +46,6 @@ msgctxt "#32040"
 msgid "Refresh"
 msgstr ""
 
-msgctxt "#32041"
-msgid "Go Up"
-msgstr ""
-
 msgctxt "#32042"
 msgid "Delete"
 msgstr ""

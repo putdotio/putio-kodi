@@ -79,7 +79,6 @@ def populate_dir(files):
 
         li.addContextMenuItems([
             (__lang__(32040), 'Container.Refresh'),  # refresh
-            (__lang__(32041), 'Action(ParentDir)'),  # go-up
             (__lang__(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url),  # delete
         ])
         list_items.append((url, li, item.is_folder))
