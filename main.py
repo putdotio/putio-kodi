@@ -26,21 +26,21 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-from resources.lib.helper import __lang__
-from resources.lib.helper import __settings__
+from resources.lib.helper import I18N
+from resources.lib.helper import SETTINGS
 from resources.lib.helper import PutioApiHandler
 from resources.lib.helper import PutioAuthFailureException
 
-__url__ = sys.argv[0]  # base URL ('plugin://plugin.video.putio/')
-__handle__ = int(sys.argv[1])  # process handle, as a numeric string
-__args__ = urlparse.parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
+PLUGIN_URL = sys.argv[0]  # base URL ('plugin://plugin.video.putio/')
+PLUGIN_HANDLE = int(sys.argv[1])  # process handle, as a numeric string
+PLUGIN_ARGS = urlparse.parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
 
 PUTIO_KODI_ENDPOINT = 'https://put.io/xbmc'
-RESOURCE_PATH = os.path.join(__settings__.getAddonInfo('path'), 'resources', 'media')
+RESOURCE_PATH = os.path.join(SETTINGS.getAddonInfo('path'), 'resources', 'media')
 
 
 def build_url(action, item):
-    return '{0}?action={1}&item={2}'.format(__url__, action, item)
+    return '{0}?action={1}&item={2}'.format(PLUGIN_URL, action, item)
 
 
 def get_resource_path(filename):
@@ -78,16 +78,16 @@ def populate_dir(files):
             li.setInfo(type=type_, infoLabels={'size': item.size, 'title': item.name})
 
         li.addContextMenuItems([
-            (__lang__(32040), 'Container.Refresh'),  # refresh
-            (__lang__(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url),  # delete
+            (I18N(32040), 'Container.Refresh'),  # refresh
+            (I18N(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url),  # delete
         ])
         list_items.append((url, li, item.is_folder))
 
-    xbmcplugin.addDirectoryItems(handle=__handle__, items=list_items, totalItems=len(list_items))
-    xbmcplugin.setContent(handle=__handle__, content='files')
-    xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
-    xbmcplugin.addSortMethod(handle=__handle__, sortMethod=xbmcplugin.SORT_METHOD_SIZE)
-    xbmcplugin.endOfDirectory(handle=__handle__)
+    xbmcplugin.addDirectoryItems(handle=PLUGIN_HANDLE, items=list_items, totalItems=len(list_items))
+    xbmcplugin.setContent(handle=PLUGIN_HANDLE, content='files')
+    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_SIZE)
+    xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE)
 
 
 def play(item):
@@ -118,7 +118,7 @@ def delete(item):
     if item.id == 0:
         return
 
-    response = xbmcgui.Dialog().yesno(heading=__lang__(32060), line1=__lang__(32061))
+    response = xbmcgui.Dialog().yesno(heading=I18N(32060), line1=I18N(32061))
 
     # yes=1, no=0
     if response == 0:
@@ -131,8 +131,8 @@ def delete(item):
 def main():
     """Dispatches the commands."""
 
-    handler = PutioApiHandler(__settings__.getSetting('oauth2_token'))
-    item_id = __args__.get('item')
+    handler = PutioApiHandler(SETTINGS.getSetting('oauth2_token'))
+    item_id = PLUGIN_ARGS.get('item')
     if not item_id:
         populate_dir(handler.list(parent=0))
         return
@@ -143,7 +143,7 @@ def main():
         return
 
     # Dispatch commands
-    action = __args__.get('action')
+    action = PLUGIN_ARGS.get('action')
     if not action:
         return
 
@@ -170,17 +170,17 @@ if __name__ == '__main__':
         # FIXME: json parsing might fail
         uniqueid = r.json()['id']
 
-        xbmcgui.Dialog().ok(heading=__lang__(32022),
-                            line1=__lang__(32023) % uniqueid,
-                            line2=__lang__(32024))
+        xbmcgui.Dialog().ok(heading=I18N(32022),
+                            line1=I18N(32023) % uniqueid,
+                            line2=I18N(32024))
 
         try:
             # request oauth2 token in exchange to this unique id.
             r = requests.get(PUTIO_KODI_ENDPOINT + '/k/%s' % uniqueid)
             oauth2_token = r.json()['oauthtoken']
             if oauth2_token:
-                __settings__.setSetting('oauth2_token', str(oauth2_token))
+                SETTINGS.setSetting('oauth2_token', str(oauth2_token))
                 main()
         except Exception as e:
             xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e, level=xbmc.LOGERROR)
-            xbmcgui.Dialog().ok(header=__lang__(32020), header1=str(e))
+            xbmcgui.Dialog().ok(header=I18N(32020), header1=str(e))
