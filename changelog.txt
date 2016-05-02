@@ -1,3 +1,7 @@
+2016-05-02 Ibrahim Gungor <ibrahim@put.io>
+    * Sort files by date
+    * Inform user if payment is expired
+
 2016-04-21 Ibrahim Gungor <ibrahim@put.io>
     * Video resume support
     * Sort files by name
