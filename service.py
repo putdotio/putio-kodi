@@ -57,6 +57,9 @@ if __name__ == '__main__':
 
         # time to send a request
         handler = Client(access_token=oauth2_token, use_retry=True)
-        handler.request('/files/%s/start-from/set' % item_id,
-                        method='POST',
-                        data={'time': video_is_at})
+        try:
+            handler.request('/files/%s/start-from/set' % item_id,
+                            method='POST',
+                            data={'time': video_is_at})
+        except Exception as e:
+            xbmc.log(msg='[putio.service] Exception while syncing video position with the API. %s' % e)
