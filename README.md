@@ -11,6 +11,7 @@ Put.io Kodi addon.
 - Refresh directory
 - Sort files by name
 - Sort files by size
+- Sort files by date
 - Delete file/directory
 - Localization
 
