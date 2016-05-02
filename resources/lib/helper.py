@@ -2,7 +2,7 @@ import putio
 import xbmcgui
 import xbmcaddon
 
-tSETTINGS = xbmcaddon.Addon(id='plugin.video.putio')
+SETTINGS = xbmcaddon.Addon(id='plugin.video.putio')
 I18N = SETTINGS.getLocalizedString
 
 
