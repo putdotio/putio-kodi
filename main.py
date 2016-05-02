@@ -77,10 +77,11 @@ def populate_dir(files):
             type_ = 'video' if item.is_video else 'music'
             li.setInfo(type=type_, infoLabels={'size': item.size, 'title': item.name})
 
-        li.addContextMenuItems([
-            (I18N(32040), 'Container.Refresh'),  # refresh
-            (I18N(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url),  # delete
-        ])
+        context_menu_items = [(I18N(32040), 'Container.Refresh')]
+        if not item.is_shared:
+            context_menu_items.append((I18N(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url))  # delete context
+
+        li.addContextMenuItems(context_menu_items)
         list_items.append((url, li, item.is_folder))
 
     xbmcplugin.addDirectoryItems(handle=PLUGIN_HANDLE, items=list_items, totalItems=len(list_items))
