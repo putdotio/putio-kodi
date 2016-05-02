@@ -38,3 +38,7 @@ class PutioApiHandler(object):
         if item.is_audio or item.is_video or item.is_folder:
             return True
         return False
+
+    def is_account_active(self):
+        r = self.client.Account.info()
+        return r['info']['account_active']

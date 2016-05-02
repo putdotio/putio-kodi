@@ -134,7 +134,12 @@ def main():
 
     handler = PutioApiHandler(SETTINGS.getSetting('oauth2_token'))
     item_id = PLUGIN_ARGS.get('item')
-    if not item_id:
+    if not item_id:  # Entrypoint.
+        # if the user has an account but no product,
+        # she could walk the files but couldn't play them. Inform.
+        if not handler.is_account_active():
+            xbmcgui.Dialog().ok(heading=I18N(32062), line1=I18N(32063))
+
         populate_dir(handler.list(parent=0))
         return
 
