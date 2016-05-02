@@ -60,33 +60,39 @@ def populate_dir(files):
                               iconImage=thumbnail,
                               thumbnailImage=thumbnail)
 
-        # url when a delete action is triggered
-        delete_ctx_url = build_url(action='delete', item=item.id)
+        # http://kodi.wiki/view/InfoLabels
+        type_ = 'video' if item.is_video or item.is_folder else 'music'
+        li.setInfo(type=type_,
+                   infoLabels={
+                       'date': item.created_at.strftime('%d.%m.%Y'),
+                       'size': item.size,
+                       'title': item.name,
+                   })
 
         if item.is_folder:
             url = build_url(action='list', item=item.id)
         else:  # video or audio, no other types are available here
             url = build_url(action='play', item=item.id)
-
             # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
             # FIXME: get total-time of the file and set to 'totaltime'
             li.setProperty(key='resumetime', value=str(item.start_from))
             li.setProperty(key='totaltime', value=str(20 * 60))
 
-            # http://kodi.wiki/view/InfoLabels
-            type_ = 'video' if item.is_video else 'music'
-            li.setInfo(type=type_, infoLabels={'size': item.size, 'title': item.name})
-
         context_menu_items = [(I18N(32040), 'Container.Refresh')]
         if not item.is_shared:
-            context_menu_items.append((I18N(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url))  # delete context
+            # url when a delete action is triggered
+            delete_ctx_url = build_url(action='delete', item=item.id)
+            context_menu_items.append(
+                (I18N(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url))  # delete context
 
         li.addContextMenuItems(context_menu_items)
         list_items.append((url, li, item.is_folder))
 
     xbmcplugin.addDirectoryItems(handle=PLUGIN_HANDLE, items=list_items, totalItems=len(list_items))
     xbmcplugin.setContent(handle=PLUGIN_HANDLE, content='files')
-    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE,
+                             sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_DATE)
     xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_SIZE)
     xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE)
 
@@ -176,9 +182,7 @@ if __name__ == '__main__':
         # FIXME: json parsing might fail
         uniqueid = r.json()['id']
 
-        xbmcgui.Dialog().ok(heading=I18N(32022),
-                            line1=I18N(32023) % uniqueid,
-                            line2=I18N(32024))
+        xbmcgui.Dialog().ok(heading=I18N(32022), line1=I18N(32023) % uniqueid, line2=I18N(32024))
 
         try:
             # request oauth2 token in exchange to this unique id.
