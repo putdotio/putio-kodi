@@ -149,7 +149,7 @@ def main():
         populate_dir(handler.list(parent=0))
         return
 
-    item_id = item_id[0]
+    item_id = int(item_id[0])
     item = handler.get(id_=item_id)
     if not item.content_type:
         return
