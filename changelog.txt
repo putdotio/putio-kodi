@@ -11,7 +11,6 @@
     * Delete file/directory support
     * Proper subtitle support
     * Refresh a directory for new changes
-    * Go parent directory on context menu
     * Add Turkish locale
 
 2014-03-04  Burak Sezer  <burak@pilli.com>
