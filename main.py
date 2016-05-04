@@ -69,6 +69,11 @@ def populate_dir(files):
                        'title': item.name,
                    })
 
+        # If known prehand, this can (but does not have to) avoid HEAD requests being sent to HTTP servers to figure out
+        # file type.
+        # http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setMimeType
+        li.setMimeType(mimetype=item.content_type)
+
         if item.is_folder:
             url = build_url(action='list', item=item.id)
         else:  # video or audio, no other types are available here
@@ -111,6 +116,11 @@ def play(item):
                    'title': item.name,
                    'mediatype': 'video',
                })
+    # If known prehand, this can (but does not have to) avoid HEAD requests being sent to HTTP servers to figure out
+    # file type.
+    # http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setMimeType
+    li.setMimeType(mimetype=item.content_type)
+
     # resume where it was left off
     li.setProperty(key='startoffset', value=str(item.start_from))
     li.setProperty(key='IsPlayable', value='true')
