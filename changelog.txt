@@ -3,6 +3,7 @@
     * Inform user if payment is expired
     * Don't show delete context for shared files
     * Fix errors dialogs popping up occasionally while watching a video
+    * Fix AttributeError where an audio file has no 'start_from' attribute
 
 2016-04-21 Ibrahim Gungor <ibrahim@put.io>
     * Video resume support
