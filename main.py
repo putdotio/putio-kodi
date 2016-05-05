@@ -62,12 +62,15 @@ def populate_dir(files):
 
         # http://kodi.wiki/view/InfoLabels
         type_ = 'video' if item.is_video or item.is_folder else 'music'
-        li.setInfo(type=type_,
-                   infoLabels={
-                       'date': item.created_at.strftime('%d.%m.%Y'),
-                       'size': item.size,
-                       'title': item.name,
-                   })
+        info_labels={
+            'date': item.created_at.strftime('%d.%m.%Y'),
+            'size': item.size,
+            'title': item.name,
+        }
+        if type_ == 'video':
+            info_labels['mediatype'] = type_
+
+        li.setInfo(type=type_, infoLabels=info_labels)
 
         # If known prehand, this can (but does not have to) avoid HEAD requests being sent to HTTP servers to figure out
         # file type.
