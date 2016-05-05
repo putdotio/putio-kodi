@@ -80,7 +80,8 @@ def populate_dir(files):
             url = build_url(action='play', item=item.id)
             # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
             # FIXME: get total-time of the file and set to 'totaltime'
-            li.setProperty(key='resumetime', value=str(item.start_from))
+            if hasattr(item, 'start_from'):
+                li.setProperty(key='resumetime', value=str(item.start_from))
             li.setProperty(key='totaltime', value=str(20 * 60))
 
         context_menu_items = [(I18N(32040), 'Container.Refresh')]
@@ -122,7 +123,8 @@ def play(item):
     li.setMimeType(mimetype=item.content_type)
 
     # resume where it was left off
-    li.setProperty(key='startoffset', value=str(item.start_from))
+    if hasattr(item, 'start_from'):
+        li.setProperty(key='startoffset', value=str(item.start_from))
     li.setProperty(key='IsPlayable', value='true')
 
     li.setSubtitles([item.subtitles()])
