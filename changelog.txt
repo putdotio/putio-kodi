@@ -1,4 +1,7 @@
 2016-05-02 Ibrahim Gungor <ibrahim@put.io>
+    * Use put.io/kodi endpoint
+
+2016-05-02 Ibrahim Gungor <ibrahim@put.io>
     * Sort files by date
     * Inform user if payment is expired
     * Don't show delete context for shared files
