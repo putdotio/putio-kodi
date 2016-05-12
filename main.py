@@ -60,32 +60,34 @@ def populate_dir(files):
                               iconImage=thumbnail,
                               thumbnailImage=thumbnail)
 
-        # http://kodi.wiki/view/InfoLabels
-        type_ = 'video' if item.is_video or item.is_folder else 'music'
-        info_labels={
-            'date': item.created_at.strftime('%d.%m.%Y'),
-            'size': item.size,
-            'title': item.name,
-        }
-        if type_ == 'video':
-            info_labels['mediatype'] = type_
-
-        li.setInfo(type=type_, infoLabels=info_labels)
-
         # If known prehand, this can (but does not have to) avoid HEAD requests being sent to HTTP servers to figure out
         # file type.
         # http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setMimeType
         li.setMimeType(mimetype=item.content_type)
 
-        if item.is_folder:
+        # http://kodi.wiki/view/InfoLabels
+        info_labels={
+            'date': item.created_at.strftime('%d.%m.%Y'),
+            'size': item.size,
+            'title': item.name,
+        }
+
+        if item.is_video:
+            item_type = 'video'
+            url = build_url(action='play', item=item.id)
+
+            info_labels['mediatype'] = 'video'
+
+        elif item.is_folder:
+            # folder's type can be 'video' if you are passing it to setInfo method. Kodi authors said this. So, who
+            # cares.
+            item_type = 'video'
             url = build_url(action='list', item=item.id)
         else:  # video or audio, no other types are available here
+            item_type = 'music'
             url = build_url(action='play', item=item.id)
-            # resumetime and totaltime are needed for Kodi to decide the file as watched or not.
-            # FIXME: get total-time of the file and set to 'totaltime'
-            if hasattr(item, 'start_from'):
-                li.setProperty(key='resumetime', value=str(item.start_from))
-            li.setProperty(key='totaltime', value=str(20 * 60))
+
+        li.setInfo(type=item_type, infoLabels=info_labels)
 
         context_menu_items = [(I18N(32040), 'Container.Refresh')]
         if not item.is_shared:
