@@ -66,7 +66,7 @@ def populate_dir(files):
         li.setMimeType(mimetype=item.content_type)
 
         # http://kodi.wiki/view/InfoLabels
-        info_labels={
+        info_labels = {
             'date': item.created_at.strftime('%d.%m.%Y'),
             'size': item.size,
             'title': item.name,
@@ -77,6 +77,36 @@ def populate_dir(files):
             url = build_url(action='play', item=item.id)
 
             info_labels['mediatype'] = 'video'
+            if hasattr(item, 'video_metadata') and item.video_metadata:
+                metadata = item.video_metadata
+
+                highres = metadata['height'] >= 720
+                codec = metadata['codec']
+                duration = metadata['duration']
+                aspect_ratio = metadata['aspect_ratio']
+                video_offset = item.start_from if hasattr(item, 'start_from') else 0
+
+                overlay = xbmcgui.ICON_OVERLAY_NONE
+                if duration:
+                    info_labels['duration'] = duration
+
+                    # mark the video as watched if there is %20 progress left
+                    if (duration - video_offset) <= (duration * 0.2):
+                        info_labels['playcount'] = 1
+                        overlay |= xbmcgui.ICON_OVERLAY_WATCHED
+
+                if highres:
+                    overlay |= xbmcgui.ICON_OVERLAY_HD
+
+                info_labels['overlay'] = overlay
+
+                # resumetime and totaltime are the undocumented properties to show resumable icon.
+                if video_offset:
+                    li.setProperty(key='resumetime', value=str(video_offset))
+                if duration:
+                    li.setProperty(key='totaltime', value=str(duration))
+
+                li.addStreamInfo('video', {'width': '1080'})
 
         elif item.is_folder:
             # folder's type can be 'video' if you are passing it to setInfo method. Kodi authors said this. So, who
