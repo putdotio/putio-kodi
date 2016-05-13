@@ -1,4 +1,6 @@
 2016-05-02 Ibrahim Gungor <ibrahim@put.io>
+    * Show 'watched' icon if the video is played before
+    * Show video duration next to its title
     * Use put.io/kodi endpoint
 
 2016-05-02 Ibrahim Gungor <ibrahim@put.io>
