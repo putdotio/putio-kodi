@@ -75,6 +75,7 @@ def populate_dir(files):
         if item.is_video:
             item_type = 'video'
             url = build_url(action='play', item=item.id)
+            li.setProperty(key='IsPlayable', value='true')
 
             info_labels['mediatype'] = 'video'
 
@@ -90,7 +91,6 @@ def populate_dir(files):
                 overlay = xbmcgui.ICON_OVERLAY_NONE
                 if duration:
                     info_labels['duration'] = duration
-
                     # mark the video as watched if there is %20 progress left
                     if (duration - video_offset) <= (duration * 0.2):
                         info_labels['playcount'] = 1
@@ -107,8 +107,6 @@ def populate_dir(files):
                 if duration:
                     li.setProperty(key='totaltime', value=str(duration))
 
-                li.addStreamInfo('video', {'width': '1080'})
-
         elif item.is_folder:
             # folder's type can be 'video' if you are passing it to setInfo method. Kodi authors said this. So, who
             # cares.
@@ -117,6 +115,7 @@ def populate_dir(files):
         else:  # video or audio, no other types are available here
             item_type = 'music'
             url = build_url(action='play', item=item.id)
+            li.setProperty(key='IsPlayable', value='true')
 
         li.setInfo(type=item_type, infoLabels=info_labels)
 
@@ -142,31 +141,24 @@ def populate_dir(files):
 
 def play(item):
     """Plays the given item from where it was left off"""
-    thumbnail = item.screenshot or item.icon
 
+    thumbnail = item.screenshot or item.icon
     li = xbmcgui.ListItem(label=item.name,
                           label2=item.name,
                           iconImage=thumbnail,
                           thumbnailImage=thumbnail)
+
     li.setInfo(type='video',
                infoLabels={
                    'size': item.size,
                    'title': item.name,
                    'mediatype': 'video',
                })
-    # If known prehand, this can (but does not have to) avoid HEAD requests being sent to HTTP servers to figure out
-    # file type.
-    # http://mirrors.kodi.tv/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setMimeType
-    li.setMimeType(mimetype=item.content_type)
 
-    # resume where it was left off
-    if hasattr(item, 'start_from'):
-        li.setProperty(key='startoffset', value=str(item.start_from))
-    li.setProperty(key='IsPlayable', value='true')
-
+    li.setPath(item.stream_url())
     li.setSubtitles([item.subtitles()])
 
-    xbmc.Player().play(item=item.stream_url(), listitem=li)
+    xbmcplugin.setResolvedUrl(PLUGIN_HANDLE, succeeded=True, listitem=li)
 
 
 def delete(item):
