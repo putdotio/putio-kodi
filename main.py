@@ -77,6 +77,7 @@ def populate_dir(files):
             url = build_url(action='play', item=item.id)
 
             info_labels['mediatype'] = 'video'
+
             if hasattr(item, 'video_metadata') and item.video_metadata:
                 metadata = item.video_metadata
 
@@ -132,7 +133,7 @@ def populate_dir(files):
     xbmcplugin.addDirectoryItems(handle=PLUGIN_HANDLE, items=list_items, totalItems=len(list_items))
     xbmcplugin.setContent(handle=PLUGIN_HANDLE, content='files')
 
-    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+    xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
     xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_DATE)
     xbmcplugin.addSortMethod(handle=PLUGIN_HANDLE, sortMethod=xbmcplugin.SORT_METHOD_SIZE)
 
