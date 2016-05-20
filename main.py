@@ -82,24 +82,14 @@ def populate_dir(files):
             if hasattr(item, 'video_metadata') and item.video_metadata:
                 metadata = item.video_metadata
 
-                highres = metadata['height'] >= 720
-                codec = metadata['codec']
                 duration = metadata['duration']
-                aspect_ratio = metadata['aspect_ratio']
                 video_offset = item.start_from if hasattr(item, 'start_from') else 0
 
-                overlay = xbmcgui.ICON_OVERLAY_NONE
                 if duration:
                     info_labels['duration'] = duration
                     # mark the video as watched if there is %20 progress left
                     if (duration - video_offset) <= (duration * 0.2):
                         info_labels['playcount'] = 1
-                        overlay |= xbmcgui.ICON_OVERLAY_WATCHED
-
-                if highres:
-                    overlay |= xbmcgui.ICON_OVERLAY_HD
-
-                info_labels['overlay'] = overlay
 
                 # resumetime and totaltime are the undocumented properties to show resumable icon.
                 if video_offset:
