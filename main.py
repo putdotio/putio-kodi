@@ -102,10 +102,12 @@ def populate_dir(files):
             # cares.
             item_type = 'video'
             url = build_url(action='list', item=item.id)
-        else:  # video or audio, no other types are available here
+        elif item.is_audio:
             item_type = 'music'
             url = build_url(action='play', item=item.id)
             li.setProperty(key='IsPlayable', value='true')
+        else:  # video or audio, no other types are available here
+            continue
 
         li.setInfo(type=item_type, infoLabels=info_labels)
 
