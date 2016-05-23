@@ -1,7 +1,7 @@
 v2.2.0 (2016-05-02) Ibrahim Gungor <ibrahim@put.io>
     * Show 'watched' icon if the video is played before
     * Show video duration next to its title
-    * Sort files and folders together
+    * Sort-by-name sorts files and folders together
     * Use put.io/kodi endpoint
     * Several bugfixes regarding video resume
 
