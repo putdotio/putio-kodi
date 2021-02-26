@@ -19,7 +19,7 @@
 
 import os
 import sys
-import urlparse
+from urllib.parse import parse_qs
 import requests
 
 import xbmc
@@ -33,7 +33,7 @@ from resources.lib.helper import PutioAuthFailureException
 
 PLUGIN_URL = sys.argv[0]  # base URL ('plugin://plugin.video.putio/')
 PLUGIN_HANDLE = int(sys.argv[1])  # process handle, as a numeric string
-PLUGIN_ARGS = urlparse.parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
+PLUGIN_ARGS = parse_qs(sys.argv[2].lstrip('?'))  # query string, ('?action=list&item=3')
 
 PUTIO_KODI_ENDPOINT = 'https://put.io/kodi'
 RESOURCE_PATH = os.path.join(SETTINGS.getAddonInfo('path'), 'resources', 'media')
@@ -56,9 +56,11 @@ def populate_dir(files):
     for item in files:
         thumbnail = item.screenshot or get_resource_path('mid-folder.png')
         li = xbmcgui.ListItem(label=item.name,
-                              label2=item.name,
-                              iconImage=thumbnail,
-                              thumbnailImage=thumbnail)
+                              label2=item.name)
+        li.setArt({
+            'icon': thumbnail,
+            'thumb': thumbnail
+        })
 
         # If known prehand, this can (but does not have to) avoid HEAD requests being sent to HTTP servers to figure out
         # file type.
@@ -138,9 +140,11 @@ def play(item):
 
     thumbnail = item.screenshot or item.icon
     li = xbmcgui.ListItem(label=item.name,
-                          label2=item.name,
-                          iconImage=thumbnail,
-                          thumbnailImage=thumbnail)
+                          label2=item.name)
+    li.setArt({
+        'icon': thumbnail,
+        'thumb': thumbnail
+    })
 
     li.setInfo(type='video',
                infoLabels={
@@ -160,7 +164,7 @@ def delete(item):
     if item.id == 0:
         return
 
-    response = xbmcgui.Dialog().yesno(heading=I18N(32060), line1=I18N(32061))
+    response = xbmcgui.Dialog().yesno(heading=I18N(32060), message=I18N(32061))
 
     # yes=1, no=0
     if response == 0:
@@ -179,7 +183,7 @@ def main():
         # if the user has an account but no product,
         # she could walk the files but couldn't play them. Inform.
         if not handler.is_account_active():
-            xbmcgui.Dialog().ok(heading=I18N(32062), line1=I18N(32063))
+            xbmcgui.Dialog().ok(heading=I18N(32062), message=I18N(32063))
 
         populate_dir(handler.list(parent=0))
         return
@@ -217,7 +221,7 @@ if __name__ == '__main__':
         # FIXME: json parsing might fail
         uniqueid = r.json()['id']
 
-        xbmcgui.Dialog().ok(heading=I18N(32022), line1=I18N(32023) % uniqueid, line2=I18N(32024))
+        xbmcgui.Dialog().ok(heading=I18N(32022), message='{msg1}\n{msg2}'.format(msg1 = I18N(32023) % uniqueid, msg2=I18N(32024)))
 
         try:
             # request oauth2 token in exchange to this unique id.
@@ -228,4 +232,4 @@ if __name__ == '__main__':
                 main()
         except Exception as e:
             xbmc.log(msg='Error while fetching oauth2 token. error: %s' % e, level=xbmc.LOGERROR)
-            xbmcgui.Dialog().ok(header=I18N(32020), header1=str(e))
+            xbmcgui.Dialog().ok(heading='{heading}\n{error}'.format(heading=I18N(32020), error=str(e)))

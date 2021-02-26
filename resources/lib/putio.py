@@ -4,7 +4,7 @@ import json
 import logging
 import binascii
 import webbrowser
-from urllib import urlencode
+from urllib.parse import urlencode
 from datetime import datetime
 
 import xbmc
@@ -425,7 +425,7 @@ def strptime(date):
             'second': date[17:],
             }
 
-    d = dict((k, int(v)) for k, v in d.iteritems())
+    d = dict((k, int(v)) for k, v in list(d.items()))
     return datetime(**d)
 
 # FIXME: Import from some library, or move to utilities.

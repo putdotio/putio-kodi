@@ -1,4 +1,4 @@
-import putio
+from . import putio
 import xbmcgui
 import xbmcaddon
 
