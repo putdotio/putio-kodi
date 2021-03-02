@@ -1,3 +1,6 @@
+v3.0.0 (2021-03-02) Batu Aksoy <batuhan@put.io>
+    * Migrate to python3
+
 v2.3.0 (2019-08-05) Cenk Alti <cenk@put.io>
     * Add support for loading all available subtitles
 
