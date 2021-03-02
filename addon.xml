@@ -24,4 +24,7 @@
         <source>https://github.com/putdotio/putio-kodi</source>
         <email>info at put dot io</email>
     </extension>
+    <assets>
+        <icon>icon.png</icon>
+    </assets>
 </addon>
