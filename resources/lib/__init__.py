@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # put.io kodi addon
 # Copyright (C) 2009  Alper Kanat <alper@put.io>
 # Copyright (C) 2016  Put.io Developers <devs@put.io>

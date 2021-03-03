@@ -120,7 +120,7 @@ def populate_dir(files):
             # url when a delete action is triggered
             delete_ctx_url = build_url(action='delete', item=item.id)
             context_menu_items.append(
-                (I18N(32042), 'XBMC.RunPlugin(%s)' % delete_ctx_url))  # delete context
+                (I18N(32042), 'RunPlugin(%s)' % delete_ctx_url))  # delete context
 
         li.addContextMenuItems(context_menu_items)
         list_items.append((url, li, item.is_folder))

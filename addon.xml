@@ -18,8 +18,7 @@
         <disclaimer lang="en_GB">Please read terms of service at https://put.io/terms-of-service/</disclaimer>
         <language>en tr</language>
         <platform>all</platform>
-        <license>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</license>
-        <forum></forum>
+        <license>GPL-3.0-only</license>
         <website>https://put.io</website>
         <source>https://github.com/putdotio/putio-kodi</source>
         <email>info at put dot io</email>
