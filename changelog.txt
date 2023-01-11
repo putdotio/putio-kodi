@@ -1,3 +1,6 @@
+v3.0.1 (2023-01-11) Berkan Teber <berkan@put.io>
+    * Add compatibility with Kodi v20
+
 v3.0.0 (2021-03-02) Batu Aksoy <batuhan@put.io>
     * Migrate to python3
 
