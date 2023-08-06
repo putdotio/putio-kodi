@@ -211,7 +211,7 @@ class _File(_BaseResource):
         return subtitle_file_paths
 
     def _download_subtitle(self, url, special_path):
-        special_path_translated = xbmcvfs.translatePath(special_path)
+        special_path_translated = xbmcvfs.translatePath(special_path).encode()
         response = self.client.request(url, raw=True)
         with open(special_path_translated, 'wb') as f:
             for data in response.iter_content():
