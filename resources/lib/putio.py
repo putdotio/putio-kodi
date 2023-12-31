@@ -186,7 +186,7 @@ class _File(_BaseResource):
         """
         subtitles_list_url = '/files/%s/subtitles' % self.id
         subtitles_list_response = self.client.request(subtitles_list_url)
-        assert subtitles_list_response.status_code == 200
+        assert subtitles_list_response['status'] == 'OK'
         # NOTE: The subtitle key (used below) is a bunch of base64 encoded bits. They are not
         # deterministic, and may change even if the video id and each subtitle file contents
         # stays the same. Deleting any previous temporary subtitle files (for all videos) to
