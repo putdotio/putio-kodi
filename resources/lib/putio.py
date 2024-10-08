@@ -220,17 +220,17 @@ class _File(_BaseResource):
     # FIXME: temporarily added.
     @property
     def is_video(self):
-        return 'video' in self.content_type
+        return self.file_type == 'VIDEO'
 
     # FIXME: temporarily added.
     @property
     def is_audio(self):
-        return 'audio' in self.content_type
+        return self.file_type == 'AUDIO'
 
     # FIXME: temporarily added.
     @property
     def is_folder(self):
-        return self.content_type == 'application/x-directory'
+        return self.file_type == 'FOLDER'
 
     @classmethod
     def upload(cls, path, name=None, parent_id=0):
