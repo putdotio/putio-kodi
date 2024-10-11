@@ -205,15 +205,30 @@ class _File(_BaseResource):
             xbmcvfs.mkdirs(subtitle_directory_path)
 
             subtitle_name = subtitle['name']
-            subtitle_language = subtitle['language_code'] or ''
-            if len(subtitle_language) == 3:  # sometimes this returns wrong
-                subtitle_name = subtitle_name + ' - ' + subtitle_language
+            if subtitle_name.endswith('.srt'):
+                subtitle_name = subtitle_name[:-4]
 
-            subtitle_path = '%s/%s' % (subtitle_directory_path, subtitle_name)
+            subtitle_lang = subtitle['language_code'] or ''
+            if len(subtitle_lang) not in (2, 3):  # sometimes this returns wrong
+                subtitle_lang = 'und'
+
+            # language is unknown for folder subtitles, use last part if name ends with `.` + 2-3 chars
+            if subtitle['source'] == 'folder':
+                parts = subtitle_name.split('.')
+                if len(parts) > 1 and len(parts[-1]) in (2, 3):
+                    subtitle_lang = parts[-1]
+
+            # add language even if it's also in name, this way shown name will always be the original name
+            subtitle_fullname = subtitle_name + '.' + subtitle_lang + '.srt'
+
+            subtitle_path = '%s/%s' % (subtitle_directory_path, subtitle_fullname)
+
             # FIXME: Parallelize downloads.
             subtitle_url = '%s/%s' % (subtitles_list_url, subtitle['key'])
             self._download_subtitle(subtitle_url, subtitle_path)
+
             subtitle_file_paths.append(subtitle_path)
+
         return subtitle_file_paths
 
     def _download_subtitle(self, url, special_path):
