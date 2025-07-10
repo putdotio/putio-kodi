@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 import json
 import logging
 import binascii
@@ -204,23 +205,20 @@ class _File(_BaseResource):
             subtitle_directory_path = '%s/%s' % (video_directory_path, truncated_subtitle_key)
             xbmcvfs.mkdirs(subtitle_directory_path)
 
-            subtitle_name = subtitle['name']
-            if subtitle_name.endswith('.srt'):
-                subtitle_name = subtitle_name[:-4]
+            # NOTE: split subtitle name/extension while allowing multiple dots within the name -- both as word/part separator and as ellipsis.
+            (subtitle_name, subtitle_ext) =  os.path.splitext(subtitle['name'])
+            subtitle_ext = subtitle_ext.lstrip('.') if subtitle_ext != '' else None
+            subtitle_parts = subtitle_name.split('.')
+            subtitle_lang = subtitle['language_code'] if subtitle['language_code'] != 'und' else None
 
-            subtitle_lang = subtitle['language_code'] or ''
-            if len(subtitle_lang) not in (2, 3):  # sometimes this returns wrong
-                subtitle_lang = 'und'
+            # NOTE: append known subtitle language to subtitle name, if it is not already a (delimited) part of it
+            # NOTE: separators (dot, space, dash) found on kodi's wiki.
+            # https://kodi.wiki/view/Subtitles
+            if subtitle_lang != None and subtitle_lang.lower() not in re.split(r"[. -]", subtitle_name.lower()):
+                subtitle_parts.append(subtitle_lang)
 
-            # language is unknown for folder subtitles, use last part if name ends with `.` + 2-3 chars
-            if subtitle['source'] == 'folder':
-                parts = subtitle_name.split('.')
-                if len(parts) > 1 and len(parts[-1]) in (2, 3):
-                    subtitle_lang = parts[-1]
-
-            # add language even if it's also in name, this way shown name will always be the original name
-            subtitle_fullname = subtitle_name + '.' + subtitle_lang + '.srt'
-
+            subtitle_parts.append(subtitle_ext)
+            subtitle_fullname = '.'.join(subtitle_parts)
             subtitle_path = '%s/%s' % (subtitle_directory_path, subtitle_fullname)
 
             # FIXME: Parallelize downloads.
